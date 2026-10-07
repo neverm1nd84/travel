@@ -1,0 +1,580 @@
+<title>시드니 여행 노트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: sticky 헤더 + 탭, 일정 탭은 가로 날짜 스트립 위에 하루 상세 카드. 한 손 조작 기준. */
+:root {
+  --bg: #edf2f3;
+  --surface: #ffffff;
+  --ink: #0f2a31;
+  --muted: #587078;
+  --line: #d3dee1;
+  --accent: #0b7285;
+  --accent-soft: #d9eef2;
+  --on-accent: #ffffff;
+  --sun: #b9770e;
+  --sun-soft: #fbeccd;
+  --rel: #2f7d4b;
+  --rel-soft: #dcefe2;
+  --air: #5a6b78;
+  --air-soft: #e3e9ed;
+  --font-display: "Bricolage Grotesque", "Noto Sans KR", system-ui, sans-serif;
+  --font-body: "Noto Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b171b; --surface: #13242a; --ink: #e6f0f2; --muted: #8fa8af; --line: #24383f;
+    --accent: #4cc3d6; --accent-soft: #14343b; --on-accent: #06242a;
+    --sun: #f0b73e; --sun-soft: #3a2f12; --rel: #6cc08a; --rel-soft: #17301f;
+    --air: #9fb2bf; --air-soft: #1d2d36; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b171b; --surface: #13242a; --ink: #e6f0f2; --muted: #8fa8af; --line: #24383f;
+  --accent: #4cc3d6; --accent-soft: #14343b; --on-accent: #06242a;
+  --sun: #f0b73e; --sun-soft: #3a2f12; --rel: #6cc08a; --rel-soft: #17301f;
+  --air: #9fb2bf; --air-soft: #1d2d36; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.6; }
+a { color: var(--accent); }
+.wrap { max-width: 640px; margin-inline: auto; padding-inline: 16px; padding-block: 0 48px; }
+
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); border-bottom: 1px solid var(--line); margin-inline: -16px; padding: 12px 16px 0; }
+.title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: 22px; letter-spacing: -0.01em; margin: 0; }
+.sub { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+nav.tabs { display: flex; gap: 4px; margin-top: 8px; overflow-x: auto; scrollbar-width: none; }
+nav.tabs button { flex: 1 0 auto; border: 0; background: none; color: var(--muted); font: inherit; font-weight: 500; padding: 10px 14px; border-bottom: 3px solid transparent; cursor: pointer; }
+nav.tabs button[aria-selected="true"] { color: var(--ink); font-weight: 700; border-bottom-color: var(--accent); }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.strip { display: flex; gap: 6px; overflow-x: auto; padding: 14px 16px 10px; margin-inline: -16px; scroll-snap-type: x proximity; scrollbar-width: none; }
+.chip { flex: 0 0 auto; width: 52px; scroll-snap-align: center; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 10px; padding: 6px 0 7px; font: inherit; text-align: center; cursor: pointer; position: relative; overflow: hidden; }
+.chip::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--c, var(--accent)); }
+.chip .d { display: block; font-family: var(--font-display); font-weight: 800; font-size: 20px; line-height: 1.2; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.chip .w { display: block; font-size: 11px; color: var(--muted); }
+.chip .m { display: block; font-size: 10px; color: var(--muted); line-height: 1; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.chip[aria-pressed="true"] .w, .chip[aria-pressed="true"] .m { color: var(--bg); opacity: .75; }
+.chip.today { box-shadow: 0 0 0 2px var(--sun); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--muted); padding-bottom: 4px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+
+.day { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
+.day-head { display: flex; flex-direction: column; gap: 6px; }
+.badges { display: flex; flex-wrap: wrap; gap: 6px; }
+.badge { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); }
+.badge.rel { background: var(--rel-soft); color: var(--rel); }
+.badge.air { background: var(--air-soft); color: var(--air); }
+.badge.sun { background: var(--sun-soft); color: var(--sun); }
+h2 { font-family: var(--font-display); font-weight: 800; font-size: 26px; line-height: 1.2; margin: 0; text-wrap: balance; }
+.date-line { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.lead { margin: 0; color: var(--muted); }
+
+section.block { display: flex; flex-direction: column; gap: 8px; }
+.label { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0; }
+.list { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.item { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; }
+.item > div { min-width: 0; }
+.item b { display: block; font-weight: 700; }
+.item span.desc { color: var(--muted); font-size: 14px; display: block; }
+.map { flex: 0 0 auto; font-size: 12px; font-weight: 700; text-decoration: none; border: 1px solid var(--accent); border-radius: 99px; padding: 3px 11px; color: var(--accent); white-space: nowrap; }
+.meal { border-left: 4px solid var(--sun); }
+.tipbox { background: var(--sun-soft); border-radius: 10px; padding: 12px 14px; font-size: 14px; }
+.tipbox b { color: var(--sun); }
+.pager { display: flex; gap: 10px; }
+.pager button { flex: 1; font: inherit; font-weight: 700; padding: 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.pager button:disabled { opacity: .35; cursor: default; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.card h3 { font-family: var(--font-display); font-weight: 800; font-size: 18px; margin: 0; }
+.kv { display: grid; grid-template-columns: 74px 1fr; gap: 2px 10px; font-size: 14px; margin: 0; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.stack { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+.copy { font: inherit; font-size: 12px; font-weight: 700; border: 1px solid var(--line); border-radius: 99px; background: none; color: var(--ink); padding: 2px 10px; cursor: pointer; margin-left: 6px; }
+.seg { display: flex; gap: 6px; margin-top: 16px; flex-wrap: wrap; }
+.seg button { font: inherit; font-size: 13px; padding: 5px 13px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.fine { color: var(--muted); font-size: 12px; margin-top: 20px; }
+.empty-note { color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) { .day { animation: fade .18s ease-out; } }
+@keyframes fade { from { opacity: .4; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="title-row">
+      <h1>시드니 여행 노트</h1>
+      <span class="sub">12.29 – 1.16 · 장 · 아내 · 윤</span>
+    </div>
+    <nav class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="plan" aria-selected="true">일정</button>
+      <button role="tab" data-tab="stay" aria-selected="false">항공·숙소</button>
+      <button role="tab" data-tab="food" aria-selected="false">맛집</button>
+      <button role="tab" data-tab="info" aria-selected="false">현지 팁</button>
+    </nav>
+  </header>
+  <main id="view"></main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var G = function (q) { return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q); };
+
+  var PHASE = {
+    air:  { label: "공항 호텔", cls: "air", color: "var(--air)" },
+    rel:  { label: "친척집 (Centennial Park)", cls: "rel", color: "var(--rel)" },
+    city: { label: "시내 호텔", cls: "", color: "var(--accent)" },
+    home: { label: "귀국", cls: "sun", color: "var(--sun)" }
+  };
+
+  /* 하루 단위 일정. withRel: 친척 차량/동행을 추천하는 날 */
+  var DAYS = [
+    { date: "2026-12-29", ph: "air", title: "시드니 도착", stay: "노보텔 에어포트 (Wolli Creek)",
+      lead: "KE 401이 08:00에 출발해 20:05에 도착합니다. 입국 후 바로 호텔에서 쉽니다.",
+      spots: [
+        { n: "시드니 공항 입국", d: "입국심사와 수하물 수령. 공항 안에서 eSIM이나 SIM을 개통해 두면 편합니다.", q: "Sydney Airport International Terminal" },
+        { n: "노보텔 시드니 인터내셔널 에어포트", d: "공항역에서 기차로 한 정거장 거리(Wolli Creek). 짐을 풀고 일찍 취침.", q: "Novotel Sydney International Airport" }
+      ],
+      lunch: [{ n: "기내식", d: "점심은 비행 중에 해결합니다.", q: "" }],
+      dinner: [
+        { n: "Discovery Point (Wolli Creek)", d: "호텔에서 걸어갈 수 있는 쇼핑몰과 식당가. 늦은 시간에는 카페와 간단한 식사 위주.", q: "Discovery Point Wolli Creek restaurants" },
+        { n: "호텔 룸서비스 / 배달", d: "20:05 도착이라 피곤하면 Uber Eats로 해결해도 됩니다.", q: "" }
+      ],
+      tip: "시드니는 한국보다 2시간 빠릅니다(여름시간). 도착 날은 일정 없이 쉬고, 다음 날 아침 일찍 일어나 시차를 맞춥니다." },
+
+    { date: "2026-12-30", ph: "rel", title: "친척집 입성, 센테니얼 파크", stay: "친척집 · 10 Furber Rd, Centennial Park",
+      lead: "11:00에 노보텔을 체크아웃하고 친척집으로 이동합니다. 오후는 집 앞 공원에서 가볍게 보냅니다.",
+      withRel: true,
+      spots: [
+        { n: "친척집 이동", d: "친척이 픽업해 주면 가장 편합니다. 아니면 Uber로 약 25분.", q: "10 Furber Rd, Centennial Park NSW 2021" },
+        { n: "Centennial Parklands", d: "시드니 도심 한가운데의 큰 공원. 연못에서 오리와 새를 보고 잔디에서 놉니다. 윤이가 뛰어놀기 좋습니다.", q: "Centennial Park Sydney" },
+        { n: "Moore Park · Entertainment Quarter", d: "공원 옆 식당가와 놀이 공간. 더우면 이곳 실내로 이동.", q: "Entertainment Quarter Moore Park" }
+      ],
+      lunch: [
+        { n: "Centennial Homestead", d: "공원 안에 있는 카페. 야외 테이블에서 가볍게 점심.", q: "Centennial Homestead Centennial Park" },
+        { n: "Entertainment Quarter 식당가", d: "메뉴가 다양해 아이 입맛에 맞추기 쉽습니다.", q: "Entertainment Quarter Moore Park restaurants" }
+      ],
+      dinner: [{ n: "친척집 환영 저녁", d: "집에서 함께 식사.", q: "" }],
+      tip: "자외선이 매우 강합니다. 선크림은 SPF50+로 2시간마다 덧바르고, 모자와 물병을 챙기세요." },
+
+    { date: "2026-12-31", ph: "rel", title: "새해 전야 불꽃놀이", stay: "친척집",
+      lead: "낮에는 쉬고 저녁에 하버브리지 불꽃놀이를 봅니다. 21:00 가족용 불꽃과 자정 불꽃이 있습니다.",
+      withRel: true,
+      spots: [
+        { n: "Centennial Park 자전거", d: "오전에 공원에서 자전거를 빌려 탑니다. 윤이용 자전거와 트레일러도 있습니다.", q: "Centennial Park Cycles" },
+        { n: "낮잠과 휴식", d: "밤이 길어서 오후 2~3시간은 꼭 쉽니다.", q: "" },
+        { n: "불꽃놀이 관람", d: "무료 관람지는 Observatory Hill, Dawes Point, Barangaroo Reserve 등. 유료 지정석(Mrs Macquarie's Chair 등)도 있습니다. 어디서 볼지는 친척과 정하세요.", q: "Observatory Hill Sydney" }
+      ],
+      lunch: [{ n: "Entertainment Quarter 식당가", d: "가볍게 먹고 이른 오후에 귀가해 쉽니다.", q: "Entertainment Quarter Moore Park restaurants" }],
+      dinner: [
+        { n: "친척과 도시락 피크닉", d: "관람지에 일찍 가서 자리를 잡고 먹는 방식이 가장 현실적입니다. 음식점은 이날 예약제와 특별 메뉴가 많습니다.", q: "" }
+      ],
+      tip: "관람지는 오후부터 만석이 되고 도심 도로와 기차역이 통제됩니다. 돌아오는 길은 매우 붐비니 윤이 간식, 담요, 보조배터리를 준비하세요. 통제 정보는 NSW 정부 NYE 공식 페이지에서 확인하세요." },
+
+    { date: "2027-01-01", ph: "rel", title: "본다이 비치", stay: "친척집",
+      lead: "공휴일이라 느긋하게 시작합니다. 오후에 호주 대표 해변에서 놉니다.",
+      withRel: true,
+      spots: [
+        { n: "Bondi Beach", d: "빨간색·노란색 깃발 사이에서만 수영하세요. 윤이는 얕은 곳에서 모래놀이와 물놀이.", q: "Bondi Beach" },
+        { n: "Bondi Icebergs", d: "바닷가 절벽 아래 수영장. 입장하지 않아도 풍경 구경이 됩니다.", q: "Bondi Icebergs" },
+        { n: "Bondi 해안 산책로", d: "해변 남쪽 끝까지 짧게 걷는 길. 사진이 잘 나옵니다.", q: "Bondi Beach coastal walk" }
+      ],
+      lunch: [
+        { n: "Hurricane's Grill Bondi", d: "립과 스테이크로 유명한 해변가 식당. 새해 첫날은 대기가 깁니다.", q: "Hurricane's Grill Bondi Beach" },
+        { n: "Gelato Messina Bondi", d: "후식으로 젤라토.", q: "Gelato Messina Bondi" }
+      ],
+      dinner: [{ n: "친척집 바비큐", d: "호주식 BBQ.", q: "" }],
+      tip: "1월 1일은 공휴일이라 문 닫는 가게가 많고 해변과 도로가 붐빕니다. 아침 일찍 가면 주차와 자리가 쉽습니다." },
+
+    { date: "2027-01-02", ph: "rel", title: "패딩턴 마켓과 서리힐스", stay: "친척집",
+      lead: "토요일 장터를 보고 서리힐스 골목에서 점심을 먹습니다. 가까워서 이동이 짧습니다.",
+      spots: [
+        { n: "Paddington Markets", d: "토요일 10:00~16:00 열리는 수공예 장터. 기념품과 선물 구경하기 좋습니다.", q: "Paddington Markets Oxford St" },
+        { n: "Paddington Reservoir Gardens", d: "오래된 저수지를 개조한 정원. 사진 포인트.", q: "Paddington Reservoir Gardens" },
+        { n: "Surry Hills 골목", d: "카페와 작은 가게가 많은 동네. 오후에 Hyde Park까지 걸어서 이동해도 됩니다.", q: "Crown Street Surry Hills" }
+      ],
+      lunch: [
+        { n: "Bourke Street Bakery", d: "시드니를 대표하는 빵집. 소시지롤과 타르트가 인기.", q: "Bourke Street Bakery Surry Hills" },
+        { n: "Reuben Hills", d: "커피와 타코. 브런치 분위기.", q: "Reuben Hills Surry Hills" }
+      ],
+      dinner: [
+        { n: "Chat Thai (Haymarket)", d: "시드니에서 오래된 태국 식당. 한국인 입맛에도 잘 맞고 메뉴가 많습니다.", q: "Chat Thai Haymarket" },
+        { n: "Din Tai Fung (World Square)", d: "샤오롱바오와 볶음밥. 윤이가 먹기 쉬운 메뉴가 많습니다.", q: "Din Tai Fung World Square Sydney" }
+      ],
+      tip: "마켓은 14시 이후에 파장 분위기입니다. 오전 일찍 가세요." },
+
+    { date: "2027-01-03", ph: "rel", title: "블루마운틴 당일치기", stay: "친척집",
+      lead: "시드니 서쪽 산악 국립공원. 차로 편도 약 1시간 30분입니다.",
+      withRel: true,
+      spots: [
+        { n: "Echo Point · Three Sisters", d: "블루마운틴의 대표 전망대. 세 자매 바위를 봅니다.", q: "Echo Point Lookout Katoomba" },
+        { n: "Scenic World", d: "케이블카와 궤도열차로 계곡을 오르내립니다. 윤이가 좋아하는 탈것입니다. 온라인 예약 추천.", q: "Scenic World Katoomba" },
+        { n: "Leura 마을", d: "예쁜 가게가 모여 있는 거리. 오는 길에 들르기 좋습니다.", q: "Leura Mall" }
+      ],
+      lunch: [
+        { n: "Leura Garage", d: "Leura 마을의 인기 식당. 주말 점심은 대기가 있습니다.", q: "Leura Garage" },
+        { n: "Paragon Cafe (Katoomba)", d: "아르데코 분위기의 오래된 카페. 초콜릿으로 유명합니다.", q: "Paragon Cafe Katoomba" }
+      ],
+      dinner: [{ n: "친척집 또는 돌아오는 길에", d: "일요일 저녁은 고속도로가 막힐 수 있어 일찍 출발합니다.", q: "" }],
+      tip: "시드니보다 5~8도 낮고 날씨가 변합니다. 얇은 겉옷을 챙기세요. 친척 차량 이동이 가장 편합니다." },
+
+    { date: "2027-01-04", ph: "rel", title: "페더데일 야생동물공원", stay: "친척집",
+      lead: "코알라와 캥거루를 가까이서 보는 날입니다. 윤이에게 가장 기억에 남을 하루가 될 수 있습니다.",
+      withRel: true,
+      spots: [
+        { n: "Featherdale Wildlife Park", d: "캥거루에게 먹이를 주고 코알라 옆에서 사진을 찍습니다. 규모가 아담해 아이와 다니기 좋습니다. 입장권은 온라인 예약.", q: "Featherdale Wildlife Park Doonside" },
+        { n: "Parramatta Park / 파라마타 강변", d: "돌아오는 길에 산책하거나 저녁 식사 후 귀가.", q: "Parramatta Park" }
+      ],
+      lunch: [{ n: "공원 내 카페 또는 도시락", d: "공원 안 카페가 있습니다. 더운 날은 그늘에서 먹으세요.", q: "Featherdale Wildlife Park Doonside" }],
+      dinner: [
+        { n: "Parramatta Eat Street (Church St)", d: "레바논, 인도, 중식 식당이 줄지어 있는 거리. 외식하기 좋습니다.", q: "Church Street Parramatta restaurants" }
+      ],
+      tip: "코알라 안고 사진은 주(NSW) 법상 금지입니다. 곁에서 찍는 사진만 가능합니다." },
+
+    { date: "2027-01-05", ph: "rel", title: "브론테에서 쿠지까지 해안길", stay: "친척집",
+      lead: "시드니 동쪽 해안을 걷는 날입니다. 약 3km라 아이와도 걸을 만합니다. 아침에 시작하세요.",
+      withRel: true,
+      spots: [
+        { n: "Bronte Beach · Bronte Baths", d: "바닷가 암반에 만든 수영장. 아이가 놀기 좋은 얕은 물이 있습니다.", q: "Bronte Baths" },
+        { n: "Bronte – Coogee 해안 산책로", d: "절벽 위 길을 따라 걷고 중간에 공동묘지와 바다 풍경을 지납니다. 그늘이 적습니다.", q: "Bronte to Coogee coastal walk" },
+        { n: "Coogee Beach", d: "도착 후 수영하고 쉽니다. 해변이 안전한 편입니다.", q: "Coogee Beach" }
+      ],
+      lunch: [
+        { n: "Coogee Pavilion", d: "해변 앞 큰 레스토랑. 테라스 자리가 좋습니다.", q: "Coogee Pavilion" },
+        { n: "Coogee 피시앤칩스", d: "해변 앞 가게에서 포장해 잔디에서 먹기.", q: "fish and chips Coogee Beach" }
+      ],
+      dinner: [{ n: "친척집", d: "집에서 저녁.", q: "" }],
+      tip: "더운 날은 해안 산책로가 매우 뜨겁습니다. 10시 이전에 걷고 물을 넉넉히 챙기세요." },
+
+    { date: "2027-01-06", ph: "rel", title: "타롱가 동물원", stay: "친척집",
+      lead: "서큘러 키에서 페리로 12분. 시드니 항구 풍경과 동물을 함께 즐기는 날입니다.",
+      spots: [
+        { n: "Taronga Zoo", d: "하버 건너편 언덕 위 동물원. 입구에서 케이블카(Sky Safari)를 타고 올라가 걸어 내려옵니다. 기린과 코알라가 인기. 오전 일찍 입장하세요.", q: "Taronga Zoo Sydney" },
+        { n: "Circular Quay 페리", d: "도심에서 페리를 타면 오페라하우스와 하버브리지를 지납니다.", q: "Circular Quay Wharf 2" }
+      ],
+      lunch: [{ n: "동물원 내 카페 또는 피크닉", d: "동물원 안에 식당이 여럿 있습니다.", q: "Taronga Zoo Sydney" }],
+      dinner: [
+        { n: "Opera Bar", d: "오페라하우스 바로 옆 야외석. 해 질 무렵 풍경이 좋습니다.", q: "Opera Bar Sydney Opera House" },
+        { n: "Circular Quay 푸드 코트", d: "아이가 지치면 간단히 해결.", q: "Circular Quay restaurants" }
+      ],
+      tip: "Opal 카드 대신 신용카드나 휴대폰을 대고 탑승할 수 있습니다. 부부가 같은 카드로 찍으면 요금 상한이 한 번에 적용되니 같은 카드를 쓰세요." },
+
+    { date: "2027-01-07", ph: "rel", title: "맨리 페리 여행", stay: "친척집",
+      lead: "서큘러 키에서 페리로 30분. 해변 마을에서 반나절을 보냅니다.",
+      spots: [
+        { n: "Manly Wharf → The Corso", d: "선착장에서 해변까지 이어지는 보행자 거리. 기념품 가게와 식당이 많습니다.", q: "The Corso Manly" },
+        { n: "Manly Beach", d: "서핑을 구경하고 수영합니다. 깃발 사이에서만.", q: "Manly Beach" },
+        { n: "Shelly Beach", d: "맨리 해변 남쪽의 잔잔한 작은 만. 아이와 물놀이, 스노클링에 적당합니다.", q: "Shelly Beach Manly" }
+      ],
+      lunch: [
+        { n: "Hugo's Manly", d: "선착장 옆 이탈리안. 바다 풍경이 좋고 피자와 파스타가 무난합니다.", q: "Hugo's Manly" },
+        { n: "Manly 피시앤칩스", d: "Corso 근처 가게에서 포장해 해변에서.", q: "fish and chips Manly Beach" }
+      ],
+      dinner: [{ n: "친척집 또는 맨리에서 일몰 후 귀가", d: "마지막 페리 시간을 확인하세요.", q: "" }],
+      tip: "맨리 페리는 시드니 항구의 대표 경험입니다. 갈 때는 오른쪽 자리에 앉으면 오페라하우스가 잘 보입니다." },
+
+    { date: "2027-01-08", ph: "rel", title: "로열 국립공원과 크로눌라", stay: "친척집",
+      lead: "친척집에서 보내는 마지막 날입니다. 차로 약 1시간 거리의 해안 국립공원에서 물놀이를 합니다.",
+      withRel: true,
+      spots: [
+        { n: "Royal National Park · Wattamolla Beach", d: "절벽 사이 석호와 해변. 윤이가 얕은 물에서 놀기 좋습니다. 차량 입장료가 있습니다.", q: "Wattamolla Beach Royal National Park" },
+        { n: "Cronulla Beach", d: "도시에서 가까운 긴 해변. 돌아오는 길에 들릅니다.", q: "Cronulla Beach" },
+        { n: "짐 정리", d: "내일 호텔로 이동하니 저녁에 짐을 정리합니다.", q: "" }
+      ],
+      lunch: [
+        { n: "Cronulla Fish & Chips", d: "해변 앞에서 먹는 점심.", q: "fish and chips Cronulla Beach" },
+        { n: "피크닉", d: "Wattamolla에 피크닉 테이블이 있습니다. 먹을거리를 미리 사 가세요.", q: "Wattamolla Beach picnic area" }
+      ],
+      dinner: [{ n: "친척과 작별 식사", d: "그동안 신세 진 친척에게 감사 식사. 인원이 있으니 예약하세요.", q: "" }],
+      tip: "일기예보를 보고 바람이 센 날은 국립공원 해변이 위험합니다. 바위 위 물웅덩이(Figure Eight Pools)는 파도 사고가 잦아 가지 않는 편이 안전합니다." },
+
+    { date: "2027-01-09", ph: "city", title: "시내로 이동, 달링하버", stay: "소피텔 시드니 달링하버",
+      lead: "친척집을 떠나 시내 호텔로 옮깁니다. 체크인은 15:00. 먼저 짐을 맡기고 놉니다.",
+      spots: [
+        { n: "소피텔 달링하버 짐 보관", d: "일찍 도착하면 프런트에 짐을 맡기고 체크인 전에 나갑니다.", q: "Sofitel Sydney Darling Harbour" },
+        { n: "SEA LIFE Sydney Aquarium", d: "상어와 펭귄. 윤이가 좋아합니다. 온라인 예매가 쌉니다.", q: "SEA LIFE Sydney Aquarium" },
+        { n: "Darling Harbour 산책 · Chinatown", d: "물가를 걸으며 놀이터와 분수를 지나 Chinatown으로.", q: "Darling Harbour Sydney" }
+      ],
+      lunch: [
+        { n: "Darling Quarter 식당가", d: "큰 놀이터 옆 식당가. 아이와 함께 먹기 좋습니다.", q: "Darling Quarter Sydney restaurants" }
+      ],
+      dinner: [
+        { n: "Chinese Noodle Restaurant (Dixon St)", d: "손으로 뽑은 국수와 만두. 저렴하고 빨리 나옵니다.", q: "Chinese Noodle Restaurant Dixon Street Haymarket" },
+        { n: "Mamak (Haymarket)", d: "말레이시아 로티와 사테. 줄이 길어도 회전이 빠릅니다.", q: "Mamak Haymarket Sydney" }
+      ],
+      tip: "여름 토요일 밤에는 달링하버에서 불꽃놀이가 열립니다(보통 21:00). 날짜는 현지 공지로 확인하세요." },
+
+    { date: "2027-01-10", ph: "city", title: "피시마켓과 바랑가루", stay: "소피텔 시드니 달링하버",
+      lead: "해산물 점심을 먹고 항구 서쪽 지구를 걷습니다.",
+      spots: [
+        { n: "Sydney Fish Market (Pyrmont)", d: "굴, 새우, 랍스터를 사서 바로 먹는 시장. 신축 이전 여부와 영업시간을 확인하세요.", q: "Sydney Fish Market Pyrmont" },
+        { n: "Barangaroo Reserve", d: "원주민 문화를 담은 해안 공원. 하버브리지가 보입니다.", q: "Barangaroo Reserve" },
+        { n: "Queen Victoria Building (QVB)", d: "고풍스러운 쇼핑몰. 더위를 피해 구경합니다.", q: "Queen Victoria Building Sydney" }
+      ],
+      lunch: [
+        { n: "Sydney Fish Market 해산물", d: "시장 안 가게에서 굴·새우·생선튀김을 사서 야외 테이블에서 먹습니다.", q: "Sydney Fish Market Pyrmont" }
+      ],
+      dinner: [
+        { n: "Mr Wong", d: "도심 골목의 광동식 레스토랑. 오리구이가 유명합니다. 예약 필수.", q: "Mr Wong Sydney Bridge Lane" },
+        { n: "Pitt St 한식당", d: "Pitt St·Liverpool St 근처에 한식당이 많습니다. 한식이 당길 때.", q: "Korean restaurant Pitt Street Sydney" }
+      ],
+      tip: "일요일은 시내 가게가 일찍 닫습니다. 쇼핑은 오늘 오전에." },
+
+    { date: "2027-01-11", ph: "city", title: "오페라하우스와 보태닉 가든", stay: "소피텔 시드니 달링하버",
+      lead: "시드니를 대표하는 풍경을 하루에 몰아서 봅니다.",
+      spots: [
+        { n: "Royal Botanic Garden Sydney", d: "하버 옆 큰 정원. 박쥐 군락과 잔디밭이 있습니다. 시원한 오전에.", q: "Royal Botanic Garden Sydney" },
+        { n: "Mrs Macquarie's Chair", d: "오페라하우스와 하버브리지가 한 장에 담기는 포인트.", q: "Mrs Macquarie's Chair" },
+        { n: "Sydney Opera House", d: "외관 구경과 내부 가이드 투어(약 1시간, 한국어 가능 여부 확인). 계단에서 사진.", q: "Sydney Opera House" }
+      ],
+      lunch: [
+        { n: "Opera Kitchen", d: "오페라하우스 안 푸드코트. 간단하고 아이도 먹기 편합니다.", q: "Opera Kitchen Sydney Opera House" }
+      ],
+      dinner: [
+        { n: "Cafe Sydney", d: "세관 건물 옥상 레스토랑. 서큘러 키 전망이 좋습니다. 예약 추천.", q: "Cafe Sydney Customs House" }
+      ],
+      tip: "내일은 호텔을 옮기는 날입니다. 오늘 밤에 짐을 대충 정리해 두세요." },
+
+    { date: "2027-01-12", ph: "city", title: "더 록스로 이동", stay: "더 세벨 키웨스트 스위트 (The Rocks)",
+      lead: "소피텔 체크아웃(11:00) 후 세벨 체크인(14:00). 짐부터 맡기고 동네를 걷습니다.",
+      spots: [
+        { n: "더 세벨 키웨스트 스위트", d: "일찍 도착하면 짐을 맡기고 나갑니다. 방은 하버브리지와 오페라하우스 전망입니다.", q: "The Sebel Quay West Suites Sydney" },
+        { n: "The Rocks 구시가", d: "시드니 최초 정착지의 돌길과 오래된 건물. 박물관 몇 곳은 무료입니다.", q: "The Rocks Sydney" },
+        { n: "Museum of Contemporary Art", d: "서큘러 키에 있는 현대미술관. 무료 전시 위주.", q: "Museum of Contemporary Art Australia" }
+      ],
+      lunch: [
+        { n: "Lord Nelson Brewery Hotel", d: "시드니에서 가장 오래된 펍 중 하나. 직접 만든 맥주와 파이.", q: "Lord Nelson Brewery Hotel The Rocks" }
+      ],
+      dinner: [
+        { n: "The Australian Heritage Hotel", d: "캥거루·악어 토핑 피자로 유명한 펍. 호텔에서 걸어서 갑니다.", q: "The Australian Heritage Hotel The Rocks" }
+      ],
+      tip: "이동일은 무리하지 말고 오후에 호텔 근처만 걷습니다. 윤이 컨디션을 우선하세요." },
+
+    { date: "2027-01-13", ph: "city", title: "왓슨스 베이", stay: "더 세벨 키웨스트 스위트",
+      lead: "서큘러 키에서 페리로 약 25분. 절벽과 해변, 바닷가 해산물을 즐기는 하루입니다.",
+      spots: [
+        { n: "Watsons Bay 페리", d: "도심에서 페리로 이동하면 하버 풍경이 그대로 관광입니다.", q: "Watsons Bay Wharf" },
+        { n: "The Gap", d: "바다를 향한 높은 절벽. 파도 소리와 전망이 좋습니다.", q: "The Gap Park Watsons Bay" },
+        { n: "Camp Cove", d: "아이와 놀기 좋은 작은 해변.", q: "Camp Cove Beach Watsons Bay" }
+      ],
+      lunch: [
+        { n: "Doyles on the Beach", d: "1885년부터 이어진 해산물 식당. 바닷가 테이블이 좋고 예약 추천.", q: "Doyles on the Beach Watsons Bay" },
+        { n: "Doyles Fish Shop", d: "피시앤칩스를 포장해 잔디에서 먹기.", q: "Doyles Fish Shop Watsons Bay" }
+      ],
+      dinner: [
+        { n: "Pancakes on the Rocks", d: "팬케이크와 리브. 아이 메뉴가 많고 늦게까지 합니다.", q: "Pancakes on the Rocks The Rocks" }
+      ],
+      tip: "돌아오는 페리 시간표를 미리 저장하세요. 일몰까지 있다가 돌아오면 야경이 예쁩니다." },
+
+    { date: "2027-01-14", ph: "city", title: "하버브리지와 루나파크", stay: "더 세벨 키웨스트 스위트",
+      lead: "마지막 관광일. 다리를 걸어 건너 반대편 놀이공원으로 갑니다.",
+      spots: [
+        { n: "Sydney Harbour Bridge Pylon Lookout", d: "다리 기둥 꼭대기 전망대. 브리지 클라임보다 쉽고 아이와 갈 만합니다.", q: "Pylon Lookout Sydney Harbour Bridge" },
+        { n: "다리 보행로 건너기", d: "다리 동쪽 보도로 걸어서 북쪽 Milsons Point까지 갑니다. 그늘이 없어 오전에.", q: "Sydney Harbour Bridge pedestrian walkway" },
+        { n: "Luna Park Sydney", d: "하버 바로 옆 놀이공원. 입장은 무료고 어트랙션은 개별 구매입니다.", q: "Luna Park Sydney Milsons Point" }
+      ],
+      lunch: [
+        { n: "Luna Park 근처 카페", d: "Milsons Point 해안가 카페. 하버브리지가 올려다 보입니다.", q: "cafes Milsons Point Sydney" },
+        { n: "Harry's Cafe de Wheels", d: "파이에 완두 퓌레를 얹은 호주식 길거리 음식(Woolloomooloo).", q: "Harry's Cafe de Wheels Woolloomooloo" }
+      ],
+      dinner: [
+        { n: "Quay", d: "서큘러 키에서 가장 유명한 파인다이닝. 마지막 만찬이라면. 예약 필수.", q: "Quay Restaurant Sydney Overseas Passenger Terminal" },
+        { n: "Bennelong", d: "오페라하우스 안 레스토랑. 예약 필수.", q: "Bennelong Sydney Opera House" }
+      ],
+      tip: "저녁은 아이가 편하게 먹을 수 있는 곳이 더 낫다면 Pancakes on the Rocks나 Opera Bar로 바꾸세요." },
+
+    { date: "2027-01-15", ph: "home", title: "귀국 준비, 시드니 출발", stay: "체크아웃 10:00 → 공항",
+      lead: "KE 402는 21:55 출발입니다. 체크아웃 후 출발까지 약 12시간이 비니 짐을 호텔에 맡기고 가볍게 다닙니다.",
+      spots: [
+        { n: "호텔 짐 보관", d: "10:00 체크아웃 후 프런트에 짐 맡기기. 레이트 체크아웃도 문의.", q: "The Sebel Quay West Suites Sydney" },
+        { n: "Hyde Park · QVB 쇼핑", d: "기념품과 초콜릿을 삽니다. Haigh's Chocolates가 QVB에 있습니다.", q: "Haigh's Chocolates Queen Victoria Building" },
+        { n: "Coles / Woolworths 마트", d: "Tim Tam, 베지마이트, 마누카 꿀, 비타민. 선물용으로 인기.", q: "Woolworths Metro George Street Sydney" },
+        { n: "공항으로 이동", d: "Circular Quay 또는 Central에서 Airport Line을 타고 International Airport 역에서 하차. 늦어도 18:30에 공항에 도착.", q: "Sydney International Airport Station" }
+      ],
+      lunch: [
+        { n: "Din Tai Fung (World Square)", d: "마지막 점심. 만두와 볶음밥.", q: "Din Tai Fung World Square Sydney" },
+        { n: "Bourke Street Bakery", d: "공항 가기 전 간식과 빵.", q: "Bourke Street Bakery Surry Hills" }
+      ],
+      dinner: [
+        { n: "공항 식당", d: "출국 심사 후 식당가에서 먹습니다. 17:00쯤 시내에서 일찍 먹고 출발해도 됩니다.", q: "Sydney Airport International Terminal restaurants" }
+      ],
+      tip: "공항 기차 요금은 역 이용료가 포함돼 시내 요금보다 비쌉니다. 국제선은 출발 3시간 전 도착을 권장합니다. 면세 환급(TRS)은 AUD 300 이상 구매 시 공항에서 신청합니다." },
+
+    { date: "2027-01-16", ph: "home", title: "인천 도착", stay: "귀국",
+      lead: "06:35에 인천에 도착합니다. 수고하셨습니다.",
+      spots: [{ n: "인천공항 도착", d: "입국 후 귀가.", q: "Incheon International Airport Terminal 2" }],
+      lunch: [], dinner: [],
+      tip: "" }
+  ];
+
+  var STAYS = [
+    { name: "노보텔 시드니 인터내셔널 에어포트", dates: "12/29 – 12/30 (1박)", addr: "22 Levey St, Wolli Creek NSW 2205", cin: "14:00", cout: "11:00", ph: "+61 2 9518 2000", note: "현장 잔금 34.25 AUD", q: "Novotel Sydney International Airport", c: "air" },
+    { name: "친척집", dates: "12/30 – 1/9 (10박)", addr: "10 Furber Rd, Centennial Park NSW 2021", cin: "", cout: "", ph: "", note: "", q: "10 Furber Rd, Centennial Park NSW 2021", c: "rel" },
+    { name: "소피텔 시드니 달링하버", dates: "1/9 – 1/12 (3박)", addr: "12 Darling Dr, Sydney NSW 2000", cin: "15:00", cout: "11:00", ph: "+61 2 8388 8888", note: "현장 결제 720.80 AUD · 도착 전날 18:00까지 무료 취소", q: "Sofitel Sydney Darling Harbour", c: "city" },
+    { name: "더 세벨 키웨스트 스위트 시드니", dates: "1/12 – 1/15 (3박)", addr: "98 Gloucester St, The Rocks NSW 2000", cin: "14:00", cout: "10:00", ph: "+61 2 9240 6000", note: "현장 결제 1,424 AUD · 도착 전날 18:00까지 무료 취소 · 하버 전망 객실", q: "The Sebel Quay West Suites Sydney", c: "city" }
+  ];
+
+  var FLIGHTS = [
+    { dir: "인천 → 시드니", no: "KE 401 · B787-10 · 일반석", dep: "12/29(화) 08:00", arr: "12/29(화) 20:05" },
+    { dir: "시드니 → 인천", no: "KE 402 · B787-10 · 일반석", dep: "1/15(금) 21:55", arr: "1/16(토) 06:35" }
+  ];
+
+  var INFO = [
+    { h: "날씨와 자외선", p: ["12~1월은 한여름입니다. 낮 평균 25~30도, 가끔 35도를 넘는 날이 있습니다.", "자외선이 한국보다 훨씬 강합니다. SPF50+ 선크림, 모자, 선글라스, 물병이 기본입니다.", "갑자기 소나기가 올 수 있으니 얇은 우비를 챙기세요."] },
+    { h: "교통", p: ["신용카드나 휴대폰 결제를 단말기에 대면 기차·버스·페리를 탈 수 있습니다(Opal 카드 대신). 가족 모두 같은 카드나 기기로 찍어야 일일 상한이 합산됩니다.", "윤이 연령에 따라 어린이 요금과 무료 구간이 있습니다. 어린이 Opal 카드가 필요한 경우가 있으니 역 창구에서 확인하세요.", "Uber를 쓸 때는 앱에서 어린이 카시트(Child Seat) 옵션을 요청하세요. 호주는 7세 미만 카시트가 의무입니다.", "공휴일(1/1)은 일요일 시간표로 운행합니다."] },
+    { h: "해변 안전", p: ["반드시 빨간색·노란색 깃발 사이에서만 수영하세요. 깃발이 없는 곳은 들어가지 않습니다.", "이안류(바다로 끌려가는 물살)를 만나면 해변과 나란한 방향으로 헤엄쳐 빠져나옵니다.", "바위 위나 절벽 끝에서 사진을 찍지 마세요. 사고가 잦습니다."] },
+    { h: "돈과 결제", p: ["통화는 호주 달러(AUD). 대부분 카드나 휴대폰 결제가 가능하고 현금은 거의 필요 없습니다.", "팁 문화가 없습니다. 식당 서비스에 만족하면 10% 정도 자유롭게 주면 됩니다.", "일부 가게는 공휴일에 10~15%의 할증(Surcharge)을 붙입니다."] },
+    { h: "준비물과 규정", p: ["전압 230V, 콘센트는 Type I(비스듬한 날 3개). 한국용 멀티어댑터를 챙기세요.", "한국 여권은 전자여행허가(ETA)가 필요합니다. 앱으로 미리 신청되어 있는지 확인하세요.", "음식물, 과일, 씨앗류, 나무 제품은 입국 시 신고 대상입니다. 걸리면 벌금이 큽니다.", "여행자보험과 해외 데이터 로밍 또는 eSIM을 미리 준비하세요."] },
+    { h: "비상 연락", p: ["긴급 상황(경찰·소방·구급): 000", "주시드니 대한민국 총영사관 영사콜센터(24시간): +82-2-3210-0404", "병원은 Medicare가 적용되지 않습니다. 보험 영수증을 꼭 받아 두세요."] }
+  ];
+
+  var MONTHS = { 12: "12월", 1: "1월" };
+  var WD = ["일", "월", "화", "수", "목", "금", "토"];
+  var view = document.getElementById("view");
+  var state = { tab: "plan", day: 0, foodFilter: "all" };
+
+  function parse(s) { var p = s.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function ymd(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  function mapLink(q) { return q ? '<a class="map" href="' + G(q) + '" target="_blank" rel="noopener">지도</a>' : ""; }
+
+  function items(list, cls) {
+    if (!list.length) return '<p class="empty-note">없음</p>';
+    return '<ul class="list">' + list.map(function (s) {
+      return '<li class="item ' + (cls || "") + '"><div><b>' + esc(s.n) + '</b><span class="desc">' + esc(s.d) + '</span></div>' + mapLink(s.q) + '</li>';
+    }).join("") + '</ul>';
+  }
+
+  function dayLabel(i) {
+    var d = parse(DAYS[i].date);
+    return (d.getMonth() + 1) + "월 " + d.getDate() + "일 (" + WD[d.getDay()] + ")";
+  }
+
+  function renderPlan() {
+    var todayStr = ymd(new Date());
+    var strip = DAYS.map(function (day, i) {
+      var d = parse(day.date);
+      var first = d.getDate() === 1 || i === 0;
+      return '<button class="chip' + (day.date === todayStr ? " today" : "") + '" style="--c:' + PHASE[day.ph].color + '" data-i="' + i + '" aria-pressed="' + (i === state.day) + '" aria-label="' + dayLabel(i) + '">' +
+        '<span class="m">' + (first ? MONTHS[d.getMonth() + 1] : "&nbsp;") + '</span><span class="d">' + d.getDate() + '</span><span class="w">' + WD[d.getDay()] + '</span></button>';
+    }).join("");
+
+    var legend = '<div class="legend">' + Object.keys(PHASE).map(function (k) { return '<span><i style="background:' + PHASE[k].color + '"></i>' + PHASE[k].label + '</span>'; }).join("") + '</div>';
+
+    var day = DAYS[state.day];
+    var ph = PHASE[day.ph];
+    var badges = '<span class="badge ' + ph.cls + '">' + esc(day.stay) + '</span>' + (day.withRel ? '<span class="badge rel">친척 차량 추천</span>' : "");
+    var html = '<div class="strip" id="strip">' + strip + '</div>' + legend +
+      '<article class="day"><div class="day-head"><div class="badges">' + badges + '</div>' +
+      '<div class="date-line">' + dayLabel(state.day) + ' · ' + (state.day + 1) + '/' + DAYS.length + '일째</div>' +
+      '<h2>' + esc(day.title) + '</h2><p class="lead">' + esc(day.lead) + '</p></div>' +
+      '<section class="block"><h3 class="label">가볼 곳</h3>' + items(day.spots) + '</section>';
+    if (day.lunch.length) html += '<section class="block"><h3 class="label">점심</h3>' + items(day.lunch, "meal") + '</section>';
+    if (day.dinner.length) html += '<section class="block"><h3 class="label">저녁</h3>' + items(day.dinner, "meal") + '</section>';
+    if (day.tip) html += '<div class="tipbox"><b>알아둘 것</b><br>' + esc(day.tip) + '</div>';
+    html += '<div class="pager"><button id="prev"' + (state.day === 0 ? " disabled" : "") + '>← 전날</button><button id="next"' + (state.day === DAYS.length - 1 ? " disabled" : "") + '>다음날 →</button></div></article>' +
+      '<p class="fine">영업시간·휴무·예약 여부는 방문 전에 지도 앱에서 한 번 더 확인하세요.</p>';
+    view.innerHTML = html;
+
+    var chips = view.querySelectorAll(".chip");
+    chips.forEach(function (c) { c.addEventListener("click", function () { selectDay(+c.dataset.i); }); });
+    var sel = view.querySelector('.chip[aria-pressed="true"]');
+    if (sel) { var st = document.getElementById("strip"); st.scrollLeft = sel.offsetLeft - st.clientWidth / 2 + sel.clientWidth / 2; }
+    document.getElementById("prev").addEventListener("click", function () { selectDay(state.day - 1, true); });
+    document.getElementById("next").addEventListener("click", function () { selectDay(state.day + 1, true); });
+  }
+
+  function selectDay(i, scrollTop) {
+    if (i < 0 || i >= DAYS.length) return;
+    state.day = i; save("sydney.day", String(i));
+    renderPlan();
+    if (scrollTop) window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
+  function copyBtn(text) { return '<button class="copy" data-copy="' + esc(text) + '">복사</button>'; }
+
+  function renderStay() {
+    var h = '<div class="stack"><h2 style="font-size:20px">항공</h2>';
+    FLIGHTS.forEach(function (f) {
+      h += '<div class="card"><h3>' + f.dir + '</h3><dl class="kv"><dt>편명</dt><dd>' + f.no + '</dd><dt>출발</dt><dd>' + f.dep + '</dd><dt>도착</dt><dd>' + f.arr + '</dd></dl></div>';
+    });
+    h += '<p class="fine" style="margin-top:0">2026년 7월 대한항공 스케줄 변경이 반영된 시간입니다. 출발 전 앱에서 한 번 더 확인하세요.</p>';
+    h += '<h2 style="font-size:20px;margin-top:8px">숙소</h2>';
+    STAYS.forEach(function (s) {
+      h += '<div class="card"><div class="badges"><span class="badge ' + PHASE[s.c].cls + '">' + s.dates + '</span></div><h3>' + esc(s.name) + '</h3><dl class="kv">' +
+        '<dt>주소</dt><dd>' + esc(s.addr) + copyBtn(s.addr) + '</dd>' +
+        (s.cin ? '<dt>체크인</dt><dd>' + s.cin + '</dd><dt>체크아웃</dt><dd>' + s.cout + '</dd>' : "") +
+        (s.ph ? '<dt>전화</dt><dd>' + s.ph + '</dd>' : "") +
+        (s.note ? '<dt>메모</dt><dd>' + esc(s.note) + '</dd>' : "") +
+        '</dl><div><a class="map" href="' + G(s.q) + '" target="_blank" rel="noopener">지도에서 보기</a></div></div>';
+    });
+    h += '</div>';
+    view.innerHTML = h;
+    bindCopy();
+  }
+
+  function bindCopy() {
+    view.querySelectorAll(".copy").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var t = b.dataset.copy;
+        var done = function () { b.textContent = "복사됨"; setTimeout(function () { b.textContent = "복사"; }, 1400); };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, function () { b.textContent = "길게 눌러 복사"; });
+        else b.textContent = "길게 눌러 복사";
+      });
+    });
+  }
+
+  function renderFood() {
+    var f = state.foodFilter;
+    var seg = [["all", "전체"], ["rel", "친척집 기간"], ["city", "시내 기간"]].map(function (x) {
+      return '<button data-f="' + x[0] + '" aria-pressed="' + (f === x[0]) + '">' + x[1] + '</button>';
+    }).join("");
+    var h = '<div class="seg" id="seg">' + seg + '</div><div class="stack">';
+    DAYS.forEach(function (day, i) {
+      if (f === "rel" && day.ph !== "rel") return;
+      if (f === "city" && day.ph !== "city" && day.ph !== "home" && day.ph !== "air") return;
+      var all = day.lunch.map(function (m) { return { m: m, t: "점심" }; }).concat(day.dinner.map(function (m) { return { m: m, t: "저녁" }; }))
+        .filter(function (x) { return x.m.q; });
+      if (!all.length) return;
+      h += '<div class="card"><div class="date-line"><button class="copy" data-day="' + i + '" style="margin:0">' + dayLabel(i) + ' · ' + esc(day.title) + '</button></div><ul class="list">' +
+        all.map(function (x) { return '<li class="item meal"><div><b>' + esc(x.m.n) + '</b><span class="desc">' + x.t + ' · ' + esc(x.m.d) + '</span></div>' + mapLink(x.m.q) + '</li>'; }).join("") + '</ul></div>';
+    });
+    h += '</div><p class="fine">날짜 버튼을 누르면 그날 일정으로 이동합니다. 영업시간과 예약은 방문 전에 확인하세요.</p>';
+    view.innerHTML = h;
+    view.querySelectorAll("#seg button").forEach(function (b) { b.addEventListener("click", function () { state.foodFilter = b.dataset.f; renderFood(); }); });
+    view.querySelectorAll("[data-day]").forEach(function (b) { b.addEventListener("click", function () { state.day = +b.dataset.day; save("sydney.day", String(state.day)); setTab("plan"); window.scrollTo(0, 0); }); });
+  }
+
+  function renderInfo() {
+    var h = '<div class="stack">' + INFO.map(function (s) {
+      return '<div class="card"><h3>' + esc(s.h) + '</h3>' + s.p.map(function (p) { return '<p style="margin:4px 0">' + esc(p) + '</p>'; }).join("") + '</div>';
+    }).join("") + '</div>';
+    view.innerHTML = h;
+  }
+
+  function setTab(t) {
+    state.tab = t; save("sydney.tab", t);
+    document.querySelectorAll("#tabs button").forEach(function (b) { b.setAttribute("aria-selected", String(b.dataset.tab === t)); });
+    if (t === "plan") renderPlan(); else if (t === "stay") renderStay(); else if (t === "food") renderFood(); else renderInfo();
+  }
+
+  document.querySelectorAll("#tabs button").forEach(function (b) { b.addEventListener("click", function () { setTab(b.dataset.tab); window.scrollTo(0, 0); }); });
+
+  /* 시작: 오늘이 여행 기간이면 오늘 날짜, 아니면 마지막에 보던 날 */
+  var idx = -1, today = ymd(new Date());
+  DAYS.forEach(function (d, i) { if (d.date === today) idx = i; });
+  if (idx < 0) { var s = parseInt(load("sydney.day"), 10); idx = (s >= 0 && s < DAYS.length) ? s : 0; }
+  state.day = idx;
+  var t0 = load("sydney.tab");
+  setTab(["plan", "stay", "food", "info"].indexOf(t0) >= 0 ? t0 : "plan");
+})();
+</script>
