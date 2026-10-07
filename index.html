@@ -26,6 +26,9 @@
   --rel-soft: #dcefe2;
   --air: #5a6b78;
   --air-soft: #e3e9ed;
+  --on-chip: #ffffff;
+  --sat: #2a64c8;
+  --sun-day: #d02f3b;
   --font-display: "Bricolage Grotesque", "Noto Sans KR", system-ui, sans-serif;
   --font-body: "Noto Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
 }
@@ -34,14 +37,14 @@
     --bg: #0b171b; --surface: #13242a; --ink: #e6f0f2; --muted: #8fa8af; --line: #24383f;
     --accent: #4cc3d6; --accent-soft: #14343b; --on-accent: #06242a;
     --sun: #f0b73e; --sun-soft: #3a2f12; --rel: #6cc08a; --rel-soft: #17301f;
-    --air: #9fb2bf; --air-soft: #1d2d36; color-scheme: dark;
+    --air: #9fb2bf; --air-soft: #1d2d36; --sat: #7fb0ff; --sun-day: #ff7b86; --on-chip: #06242a; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0b171b; --surface: #13242a; --ink: #e6f0f2; --muted: #8fa8af; --line: #24383f;
   --accent: #4cc3d6; --accent-soft: #14343b; --on-accent: #06242a;
   --sun: #f0b73e; --sun-soft: #3a2f12; --rel: #6cc08a; --rel-soft: #17301f;
-  --air: #9fb2bf; --air-soft: #1d2d36; color-scheme: dark;
+  --air: #9fb2bf; --air-soft: #1d2d36; --sat: #7fb0ff; --sun-day: #ff7b86; --on-chip: #06242a; color-scheme: dark;
 }
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.6; }
@@ -58,14 +61,16 @@ nav.tabs button[aria-selected="true"] { color: var(--ink); font-weight: 700; bor
 button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .strip { display: flex; gap: 6px; overflow-x: auto; padding: 14px 16px 10px; margin-inline: -16px; scroll-snap-type: x proximity; scrollbar-width: none; }
-.chip { flex: 0 0 auto; width: 52px; scroll-snap-align: center; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 10px; padding: 6px 0 7px; font: inherit; text-align: center; cursor: pointer; position: relative; overflow: hidden; }
-.chip::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--c, var(--accent)); }
-.chip .d { display: block; font-family: var(--font-display); font-weight: 800; font-size: 20px; line-height: 1.2; margin-top: 4px; font-variant-numeric: tabular-nums; }
-.chip .w { display: block; font-size: 11px; color: var(--muted); }
+.chip { flex: 0 0 auto; width: 54px; scroll-snap-align: center; border: 2px solid var(--c); background: var(--cs); color: var(--ink); border-radius: 12px; padding: 5px 0 6px; font: inherit; text-align: center; cursor: pointer; }
+.chip .d { display: block; font-family: var(--font-display); font-weight: 800; font-size: 20px; line-height: 1.2; margin-top: 2px; font-variant-numeric: tabular-nums; }
+.chip .w { display: block; font-size: 12px; font-weight: 700; }
 .chip .m { display: block; font-size: 10px; color: var(--muted); line-height: 1; }
-.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-.chip[aria-pressed="true"] .w, .chip[aria-pressed="true"] .m { color: var(--bg); opacity: .75; }
-.chip.today { box-shadow: 0 0 0 2px var(--sun); }
+.chip .w.sat, .chip .d.sat { color: var(--sat); }
+.chip .w.sun, .chip .d.sun { color: var(--sun-day); }
+.chip[aria-pressed="true"] { background: var(--c); box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--ink); }
+.chip[aria-pressed="true"] .d, .chip[aria-pressed="true"] .w, .chip[aria-pressed="true"] .m { color: var(--on-chip); }
+.chip[aria-pressed="true"] .w.sat, .chip[aria-pressed="true"] .w.sun { text-decoration: underline; text-underline-offset: 2px; }
+.chip.today::after { content: "오늘"; display: block; font-size: 9px; font-weight: 700; color: var(--sun); line-height: 1; margin-top: 2px; }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--muted); padding-bottom: 4px; }
 .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
 
@@ -89,6 +94,8 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
 .item span.desc { color: var(--muted); font-size: 14px; display: block; }
 .map { flex: 0 0 auto; font-size: 12px; font-weight: 700; text-decoration: none; border: 1px solid var(--accent); border-radius: 99px; padding: 3px 11px; color: var(--accent); white-space: nowrap; }
 .meal { border-left: 4px solid var(--sun); }
+.price { display: inline-block; font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--sun); background: var(--sun-soft); border-radius: 99px; padding: 1px 9px; margin-top: 4px; }
+.date-line .hol { color: var(--sun-day); font-weight: 700; }
 .tipbox { background: var(--sun-soft); border-radius: 10px; padding: 12px 14px; font-size: 14px; }
 .tipbox b { color: var(--sun); }
 .pager { display: flex; gap: 10px; }
@@ -136,10 +143,10 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
   var G = function (q) { return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q); };
 
   var PHASE = {
-    air:  { label: "공항 호텔", cls: "air", color: "var(--air)" },
-    rel:  { label: "친척집 (Centennial Park)", cls: "rel", color: "var(--rel)" },
-    city: { label: "시내 호텔", cls: "", color: "var(--accent)" },
-    home: { label: "귀국", cls: "sun", color: "var(--sun)" }
+    air:  { label: "공항 호텔", cls: "air", color: "var(--air)", soft: "var(--air-soft)" },
+    rel:  { label: "친척집 (Centennial Park)", cls: "rel", color: "var(--rel)", soft: "var(--rel-soft)" },
+    city: { label: "시내 호텔", cls: "", color: "var(--accent)", soft: "var(--accent-soft)" },
+    home: { label: "귀국", cls: "sun", color: "var(--sun)", soft: "var(--sun-soft)" }
   };
 
   /* 하루 단위 일정. withRel: 친척 차량/동행을 추천하는 날 */
@@ -186,7 +193,7 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
       ],
       tip: "관람지는 오후부터 만석이 되고 도심 도로와 기차역이 통제됩니다. 돌아오는 길은 매우 붐비니 윤이 간식, 담요, 보조배터리를 준비하세요. 통제 정보는 NSW 정부 NYE 공식 페이지에서 확인하세요." },
 
-    { date: "2027-01-01", ph: "rel", title: "본다이 비치", stay: "친척집",
+    { date: "2027-01-01", hol: "새해 공휴일", ph: "rel", title: "본다이 비치", stay: "친척집",
       lead: "공휴일이라 느긋하게 시작합니다. 오후에 호주 대표 해변에서 놉니다.",
       withRel: true,
       spots: [
@@ -272,7 +279,7 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
         { n: "Opera Bar", d: "오페라하우스 바로 옆 야외석. 해 질 무렵 풍경이 좋습니다.", q: "Opera Bar Sydney Opera House" },
         { n: "Circular Quay 푸드 코트", d: "아이가 지치면 간단히 해결.", q: "Circular Quay restaurants" }
       ],
-      tip: "Opal 카드 대신 신용카드나 휴대폰을 대고 탑승할 수 있습니다. 부부가 같은 카드로 찍으면 요금 상한이 한 번에 적용되니 같은 카드를 쓰세요." },
+      tip: "어른은 신용카드나 휴대폰을 대고 탑승할 수 있습니다. 윤이(만 5세)는 어린이 요금 대상이라 탑승 방법은 '현지 팁'을 확인하세요." },
 
     { date: "2027-01-07", ph: "rel", title: "맨리 페리 여행", stay: "친척집",
       lead: "서큘러 키에서 페리로 30분. 해변 마을에서 반나절을 보냅니다.",
@@ -436,17 +443,45 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
 
   var INFO = [
     { h: "날씨와 자외선", p: ["12~1월은 한여름입니다. 낮 평균 25~30도, 가끔 35도를 넘는 날이 있습니다.", "자외선이 한국보다 훨씬 강합니다. SPF50+ 선크림, 모자, 선글라스, 물병이 기본입니다.", "갑자기 소나기가 올 수 있으니 얇은 우비를 챙기세요."] },
-    { h: "교통", p: ["신용카드나 휴대폰 결제를 단말기에 대면 기차·버스·페리를 탈 수 있습니다(Opal 카드 대신). 가족 모두 같은 카드나 기기로 찍어야 일일 상한이 합산됩니다.", "윤이 연령에 따라 어린이 요금과 무료 구간이 있습니다. 어린이 Opal 카드가 필요한 경우가 있으니 역 창구에서 확인하세요.", "Uber를 쓸 때는 앱에서 어린이 카시트(Child Seat) 옵션을 요청하세요. 호주는 7세 미만 카시트가 의무입니다.", "공휴일(1/1)은 일요일 시간표로 운행합니다."] },
+    { h: "윤이 (만 5세, 110cm)", p: ["카시트: 호주(NSW)는 만 7세 미만 아이에게 승인된 어린이 보호장치를 의무로 합니다. 만 4세 이상, 키 110cm이면 등받이 있는 부스터 시트가 해당합니다. 친척 차량이나 렌터카를 탈 때 반드시 필요하니 친척에게 미리 부탁하거나 접이식·휴대용 부스터를 챙기세요.", "입장권: 동물원·아쿠아리움·와일드라이프 등 대부분 어린이 요금(보통 만 3~15세, 일부 만 4~15세)이 적용됩니다. 가족 패키지(Family ticket)가 더 싼 곳이 많으니 온라인 예매에서 비교하세요.", "놀이기구: 루나파크 등은 키 제한이 있습니다. 110cm는 어린이용과 일부 중간 난이도 기구까지 탈 수 있는 정도라, 가기 전 공식 사이트의 기구별 키 기준을 확인하세요.", "물놀이: 해변에서는 한 팔 거리 안에 두고, 얕은 물에서도 구명조끼를 권합니다.", "식당: 대부분 12세 이하 키즈메뉴(약 A$10~15)가 있습니다."] },
+    { h: "교통", p: ["어른은 신용카드나 휴대폰 결제를 단말기에 대면 기차·버스·페리를 탈 수 있습니다(Opal 카드 대신). 같은 카드나 기기로 찍어야 일일 상한이 합산되고, 일요일은 하루 요금 상한이 더 낮습니다.", "윤이는 만 4~15세라 어린이(반값) 요금 대상입니다. 카드 탭은 성인 요금으로 계산되니, 어린이 요금을 받으려면 어린이 Opal 카드나 Opal 싱글 트립 티켓을 써야 합니다. 구입처는 역 창구에서 확인하세요(만 3세 이하는 무료).", "Uber 등 차량 호출을 쓸 때도 카시트 규정은 같습니다. 앱에 어린이 카시트 옵션이 있는지 확인하고 없으면 부스터를 지참하세요.", "공휴일(1/1)은 일요일 시간표로 운행합니다."] },
     { h: "해변 안전", p: ["반드시 빨간색·노란색 깃발 사이에서만 수영하세요. 깃발이 없는 곳은 들어가지 않습니다.", "이안류(바다로 끌려가는 물살)를 만나면 해변과 나란한 방향으로 헤엄쳐 빠져나옵니다.", "바위 위나 절벽 끝에서 사진을 찍지 마세요. 사고가 잦습니다."] },
     { h: "돈과 결제", p: ["통화는 호주 달러(AUD). 대부분 카드나 휴대폰 결제가 가능하고 현금은 거의 필요 없습니다.", "팁 문화가 없습니다. 식당 서비스에 만족하면 10% 정도 자유롭게 주면 됩니다.", "일부 가게는 공휴일에 10~15%의 할증(Surcharge)을 붙입니다."] },
     { h: "준비물과 규정", p: ["전압 230V, 콘센트는 Type I(비스듬한 날 3개). 한국용 멀티어댑터를 챙기세요.", "한국 여권은 전자여행허가(ETA)가 필요합니다. 앱으로 미리 신청되어 있는지 확인하세요.", "음식물, 과일, 씨앗류, 나무 제품은 입국 시 신고 대상입니다. 걸리면 벌금이 큽니다.", "여행자보험과 해외 데이터 로밍 또는 eSIM을 미리 준비하세요."] },
     { h: "비상 연락", p: ["긴급 상황(경찰·소방·구급): 000", "주시드니 대한민국 총영사관 영사콜센터(24시간): +82-2-3210-0404", "병원은 Medicare가 적용되지 않습니다. 보험 영수증을 꼭 받아 두세요."] }
   ];
 
+
+  /* 성인 1인 기준 예상 식비 (AUD, 음료 제외). [하한, 상한] 상한이 없으면 null */
+  var BUD = {
+    "Discovery Point (Wolli Creek)": [15, 30], "호텔 룸서비스 / 배달": [20, 40],
+    "Centennial Homestead": [20, 30], "Entertainment Quarter 식당가": [15, 30],
+    "친척과 도시락 피크닉": [10, 20],
+    "Hurricane's Grill Bondi": [30, 50], "Gelato Messina Bondi": [6, 10],
+    "Bourke Street Bakery": [10, 20], "Reuben Hills": [20, 35],
+    "Chat Thai (Haymarket)": [20, 35], "Din Tai Fung (World Square)": [25, 40],
+    "Leura Garage": [20, 35], "Paragon Cafe (Katoomba)": [15, 30],
+    "공원 내 카페 또는 도시락": [10, 20], "Parramatta Eat Street (Church St)": [20, 35],
+    "Coogee Pavilion": [30, 50], "Coogee 피시앤칩스": [15, 25],
+    "동물원 내 카페 또는 피크닉": [12, 25], "Opera Bar": [30, 50], "Circular Quay 푸드 코트": [15, 25],
+    "Hugo's Manly": [30, 50], "Manly 피시앤칩스": [15, 25],
+    "Cronulla Fish & Chips": [15, 25], "피크닉": [10, 15], "친척과 작별 식사": [40, 70],
+    "Darling Quarter 식당가": [20, 35], "Chinese Noodle Restaurant (Dixon St)": [15, 25], "Mamak (Haymarket)": [20, 30],
+    "Sydney Fish Market 해산물": [25, 45], "Mr Wong": [60, 100], "Pitt St 한식당": [25, 45],
+    "Opera Kitchen": [15, 25], "Cafe Sydney": [70, 120],
+    "Lord Nelson Brewery Hotel": [25, 40], "The Australian Heritage Hotel": [25, 40],
+    "Doyles on the Beach": [50, 90], "Doyles Fish Shop": [20, 30], "Pancakes on the Rocks": [25, 40],
+    "Luna Park 근처 카페": [15, 30], "Harry's Cafe de Wheels": [8, 12], "Quay": [250, null], "Bennelong": [150, null],
+    "공항 식당": [20, 40]
+  };
+  function tier(b) { var lo = b[0]; return lo < 20 ? 1 : lo < 40 ? 2 : lo < 80 ? 3 : 4; }
+  function priceText(b) { return "1인 A$" + b[0] + (b[1] ? "–" + b[1] : " 이상"); }
+  function priceTag(m) { var b = BUD[m.n]; return b ? '<span class="price">' + "$$$$".slice(0, tier(b)) + " · " + priceText(b) + "</span>" : ""; }
+
   var MONTHS = { 12: "12월", 1: "1월" };
   var WD = ["일", "월", "화", "수", "목", "금", "토"];
   var view = document.getElementById("view");
-  var state = { tab: "plan", day: 0, foodFilter: "all" };
+  var state = { tab: "plan", day: 0, foodFilter: "all", priceFilter: 0 };
 
   function parse(s) { var p = s.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
   function ymd(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
@@ -454,12 +489,12 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
   function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 
-  function mapLink(q) { return q ? '<a class="map" href="' + G(q) + '" target="_blank" rel="noopener">지도</a>' : ""; }
+  function mapLink(q) { return q ? '<a class="map" href="' + G(q) + '" target="_blank" rel="noopener">구글맵</a>' : ""; }
 
   function items(list, cls) {
     if (!list.length) return '<p class="empty-note">없음</p>';
     return '<ul class="list">' + list.map(function (s) {
-      return '<li class="item ' + (cls || "") + '"><div><b>' + esc(s.n) + '</b><span class="desc">' + esc(s.d) + '</span></div>' + mapLink(s.q) + '</li>';
+      return '<li class="item ' + (cls || "") + '"><div><b>' + esc(s.n) + '</b><span class="desc">' + esc(s.d) + '</span>' + (cls === "meal" ? priceTag(s) : "") + '</div>' + mapLink(s.q) + '</li>';
     }).join("") + '</ul>';
   }
 
@@ -473,25 +508,26 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
     var strip = DAYS.map(function (day, i) {
       var d = parse(day.date);
       var first = d.getDate() === 1 || i === 0;
-      return '<button class="chip' + (day.date === todayStr ? " today" : "") + '" style="--c:' + PHASE[day.ph].color + '" data-i="' + i + '" aria-pressed="' + (i === state.day) + '" aria-label="' + dayLabel(i) + '">' +
-        '<span class="m">' + (first ? MONTHS[d.getMonth() + 1] : "&nbsp;") + '</span><span class="d">' + d.getDate() + '</span><span class="w">' + WD[d.getDay()] + '</span></button>';
+      var wc = (d.getDay() === 0 || day.hol) ? " sun" : d.getDay() === 6 ? " sat" : "";
+      return '<button class="chip' + (day.date === todayStr ? " today" : "") + '" style="--c:' + PHASE[day.ph].color + ';--cs:' + PHASE[day.ph].soft + '" data-i="' + i + '" aria-pressed="' + (i === state.day) + '" aria-label="' + dayLabel(i) + (day.hol ? " 공휴일" : "") + '">' +
+        '<span class="m">' + (first ? MONTHS[d.getMonth() + 1] : "&nbsp;") + '</span><span class="d' + wc + '">' + d.getDate() + '</span><span class="w' + wc + '">' + WD[d.getDay()] + '</span></button>';
     }).join("");
 
-    var legend = '<div class="legend">' + Object.keys(PHASE).map(function (k) { return '<span><i style="background:' + PHASE[k].color + '"></i>' + PHASE[k].label + '</span>'; }).join("") + '</div>';
+    var legend = '<div class="legend">' + Object.keys(PHASE).map(function (k) { return '<span><i style="background:' + PHASE[k].color + '"></i>' + PHASE[k].label + '</span>'; }).join("") + '<span><b style="color:var(--sat)">토</b> · <b style="color:var(--sun-day)">일·공휴일</b></span></div>';
 
     var day = DAYS[state.day];
     var ph = PHASE[day.ph];
     var badges = '<span class="badge ' + ph.cls + '">' + esc(day.stay) + '</span>' + (day.withRel ? '<span class="badge rel">친척 차량 추천</span>' : "");
     var html = '<div class="strip" id="strip">' + strip + '</div>' + legend +
       '<article class="day"><div class="day-head"><div class="badges">' + badges + '</div>' +
-      '<div class="date-line">' + dayLabel(state.day) + ' · ' + (state.day + 1) + '/' + DAYS.length + '일째</div>' +
+      '<div class="date-line">' + dayLabel(state.day) + (day.hol ? ' <span class="hol">· ' + day.hol + '</span>' : "") + ' · ' + (state.day + 1) + '/' + DAYS.length + '일째</div>' +
       '<h2>' + esc(day.title) + '</h2><p class="lead">' + esc(day.lead) + '</p></div>' +
       '<section class="block"><h3 class="label">가볼 곳</h3>' + items(day.spots) + '</section>';
     if (day.lunch.length) html += '<section class="block"><h3 class="label">점심</h3>' + items(day.lunch, "meal") + '</section>';
     if (day.dinner.length) html += '<section class="block"><h3 class="label">저녁</h3>' + items(day.dinner, "meal") + '</section>';
     if (day.tip) html += '<div class="tipbox"><b>알아둘 것</b><br>' + esc(day.tip) + '</div>';
     html += '<div class="pager"><button id="prev"' + (state.day === 0 ? " disabled" : "") + '>← 전날</button><button id="next"' + (state.day === DAYS.length - 1 ? " disabled" : "") + '>다음날 →</button></div></article>' +
-      '<p class="fine">영업시간·휴무·예약 여부는 방문 전에 지도 앱에서 한 번 더 확인하세요.</p>';
+      '<p class="fine">영업시간·휴무·예약 여부는 방문 전에 구글맵에서 한 번 더 확인하세요.</p>';
     view.innerHTML = html;
 
     var chips = view.querySelectorAll(".chip");
@@ -524,7 +560,7 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
         (s.cin ? '<dt>체크인</dt><dd>' + s.cin + '</dd><dt>체크아웃</dt><dd>' + s.cout + '</dd>' : "") +
         (s.ph ? '<dt>전화</dt><dd>' + s.ph + '</dd>' : "") +
         (s.note ? '<dt>메모</dt><dd>' + esc(s.note) + '</dd>' : "") +
-        '</dl><div><a class="map" href="' + G(s.q) + '" target="_blank" rel="noopener">지도에서 보기</a></div></div>';
+        '</dl><div><a class="map" href="' + G(s.q) + '" target="_blank" rel="noopener">구글맵에서 보기</a></div></div>';
     });
     h += '</div>';
     view.innerHTML = h;
@@ -547,19 +583,26 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
     var seg = [["all", "전체"], ["rel", "친척집 기간"], ["city", "시내 기간"]].map(function (x) {
       return '<button data-f="' + x[0] + '" aria-pressed="' + (f === x[0]) + '">' + x[1] + '</button>';
     }).join("");
-    var h = '<div class="seg" id="seg">' + seg + '</div><div class="stack">';
+    var pseg = [[0, "예산 전체"], [1, "$ ~A$20"], [2, "$$ A$20~40"], [3, "$$$ A$40~80"], [4, "$$$$ A$80+"]].map(function (x) {
+      return '<button data-p="' + x[0] + '" aria-pressed="' + (state.priceFilter === x[0]) + '">' + x[1] + '</button>';
+    }).join("");
+    var h = '<div class="seg" id="seg">' + seg + '</div><div class="seg" id="pseg" style="margin-top:8px">' + pseg + '</div><p class="fine" style="margin:8px 0 0">금액은 성인 1인 기준 예상 식비(음료 제외)입니다. 키즈메뉴는 보통 A$10~15입니다.</p><div class="stack">';
+    var shown = 0;
     DAYS.forEach(function (day, i) {
       if (f === "rel" && day.ph !== "rel") return;
       if (f === "city" && day.ph !== "city" && day.ph !== "home" && day.ph !== "air") return;
       var all = day.lunch.map(function (m) { return { m: m, t: "점심" }; }).concat(day.dinner.map(function (m) { return { m: m, t: "저녁" }; }))
-        .filter(function (x) { return x.m.q; });
+        .filter(function (x) { return x.m.q && (!state.priceFilter || (BUD[x.m.n] && tier(BUD[x.m.n]) === state.priceFilter)); });
       if (!all.length) return;
+      shown++;
       h += '<div class="card"><div class="date-line"><button class="copy" data-day="' + i + '" style="margin:0">' + dayLabel(i) + ' · ' + esc(day.title) + '</button></div><ul class="list">' +
-        all.map(function (x) { return '<li class="item meal"><div><b>' + esc(x.m.n) + '</b><span class="desc">' + x.t + ' · ' + esc(x.m.d) + '</span></div>' + mapLink(x.m.q) + '</li>'; }).join("") + '</ul></div>';
+        all.map(function (x) { return '<li class="item meal"><div><b>' + esc(x.m.n) + '</b><span class="desc">' + x.t + ' · ' + esc(x.m.d) + '</span>' + priceTag(x.m) + '</div>' + mapLink(x.m.q) + '</li>'; }).join("") + '</ul></div>';
     });
+    if (!shown) h += '<p class="empty-note">조건에 맞는 식당이 없습니다. 예산 또는 기간 필터를 바꿔 보세요.</p>';
     h += '</div><p class="fine">날짜 버튼을 누르면 그날 일정으로 이동합니다. 영업시간과 예약은 방문 전에 확인하세요.</p>';
     view.innerHTML = h;
     view.querySelectorAll("#seg button").forEach(function (b) { b.addEventListener("click", function () { state.foodFilter = b.dataset.f; renderFood(); }); });
+    view.querySelectorAll("#pseg button").forEach(function (b) { b.addEventListener("click", function () { state.priceFilter = +b.dataset.p; renderFood(); }); });
     view.querySelectorAll("[data-day]").forEach(function (b) { b.addEventListener("click", function () { state.day = +b.dataset.day; save("sydney.day", String(state.day)); setTab("plan"); window.scrollTo(0, 0); }); });
   }
 
