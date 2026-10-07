@@ -27,6 +27,8 @@
   --air: #5a6b78;
   --air-soft: #e3e9ed;
   --on-chip: #ffffff;
+  --ind: #5a4fc7;
+  --ind-soft: #e6e3fa;
   --sat: #2a64c8;
   --sun-day: #d02f3b;
   --font-display: "Bricolage Grotesque", "Noto Sans KR", system-ui, sans-serif;
@@ -37,14 +39,14 @@
     --bg: #0b171b; --surface: #13242a; --ink: #e6f0f2; --muted: #8fa8af; --line: #24383f;
     --accent: #4cc3d6; --accent-soft: #14343b; --on-accent: #06242a;
     --sun: #f0b73e; --sun-soft: #3a2f12; --rel: #6cc08a; --rel-soft: #17301f;
-    --air: #9fb2bf; --air-soft: #1d2d36; --sat: #7fb0ff; --sun-day: #ff7b86; --on-chip: #06242a; color-scheme: dark;
+    --air: #9fb2bf; --air-soft: #1d2d36; --sat: #7fb0ff; --sun-day: #ff7b86; --on-chip: #06242a; --ind: #a9a2ff; --ind-soft: #26224a; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0b171b; --surface: #13242a; --ink: #e6f0f2; --muted: #8fa8af; --line: #24383f;
   --accent: #4cc3d6; --accent-soft: #14343b; --on-accent: #06242a;
   --sun: #f0b73e; --sun-soft: #3a2f12; --rel: #6cc08a; --rel-soft: #17301f;
-  --air: #9fb2bf; --air-soft: #1d2d36; --sat: #7fb0ff; --sun-day: #ff7b86; --on-chip: #06242a; color-scheme: dark;
+  --air: #9fb2bf; --air-soft: #1d2d36; --sat: #7fb0ff; --sun-day: #ff7b86; --on-chip: #06242a; --ind: #a9a2ff; --ind-soft: #26224a; color-scheme: dark;
 }
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.6; }
@@ -56,7 +58,7 @@ header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; 
 h1 { font-family: var(--font-display); font-weight: 800; font-size: 22px; letter-spacing: -0.01em; margin: 0; }
 .sub { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
 nav.tabs { display: flex; gap: 4px; margin-top: 8px; overflow-x: auto; scrollbar-width: none; }
-nav.tabs button { flex: 1 0 auto; border: 0; background: none; color: var(--muted); font: inherit; font-weight: 500; padding: 10px 14px; border-bottom: 3px solid transparent; cursor: pointer; }
+nav.tabs button { flex: 1 0 auto; border: 0; background: none; color: var(--muted); font: inherit; font-weight: 500; padding: 10px 10px; white-space: nowrap; border-bottom: 3px solid transparent; cursor: pointer; }
 nav.tabs button[aria-selected="true"] { color: var(--ink); font-weight: 700; border-bottom-color: var(--accent); }
 button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
@@ -80,6 +82,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .badge { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); }
 .badge.rel { background: var(--rel-soft); color: var(--rel); }
 .badge.air { background: var(--air-soft); color: var(--air); }
+.badge.ind { background: var(--ind-soft); color: var(--ind); }
 .badge.sun { background: var(--sun-soft); color: var(--sun); }
 h2 { font-family: var(--font-display); font-weight: 800; font-size: 26px; line-height: 1.2; margin: 0; text-wrap: balance; }
 .date-line { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
@@ -112,6 +115,17 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
 .seg { display: flex; gap: 6px; margin-top: 16px; flex-wrap: wrap; }
 .seg button { font: inherit; font-size: 13px; padding: 5px 13px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
 .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.eta { border: 2px solid var(--sun); }
+.eta ol { margin: 4px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+.warn { background: var(--sun-soft); border-radius: 8px; padding: 8px 12px; font-size: 14px; }
+.cd { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.cd b { font-family: var(--font-display); font-size: 28px; font-variant-numeric: tabular-nums; }
+.checks { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
+.checks label { display: flex; gap: 10px; align-items: flex-start; padding: 7px 0; cursor: pointer; min-width: 0; }
+.checks input { width: 20px; height: 20px; margin: 2px 0 0; flex: 0 0 auto; accent-color: var(--accent); }
+.checks input:checked + span { color: var(--muted); text-decoration: line-through; }
+.checks small { display: block; color: var(--muted); font-size: 12px; text-decoration: none; }
+.prog { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
 .fine { color: var(--muted); font-size: 12px; margin-top: 20px; }
 .empty-note { color: var(--muted); }
 @media (prefers-reduced-motion: no-preference) { .day { animation: fade .18s ease-out; } }
@@ -123,13 +137,14 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
 <div class="wrap">
   <header class="top">
     <div class="title-row">
-      <h1>시드니 여행 노트</h1>
+      <h1>🐨 시드니 여행 노트</h1>
       <span class="sub">12.29 – 1.16 · 장 · 아내 · 윤</span>
     </div>
     <nav class="tabs" role="tablist" id="tabs">
       <button role="tab" data-tab="plan" aria-selected="true">일정</button>
       <button role="tab" data-tab="stay" aria-selected="false">항공·숙소</button>
       <button role="tab" data-tab="food" aria-selected="false">맛집</button>
+      <button role="tab" data-tab="prep" aria-selected="false">준비물</button>
       <button role="tab" data-tab="info" aria-selected="false">현지 팁</button>
     </nav>
   </header>
@@ -145,7 +160,8 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
   var PHASE = {
     air:  { label: "공항 호텔", cls: "air", color: "var(--air)", soft: "var(--air-soft)" },
     rel:  { label: "친척집 (Centennial Park)", cls: "rel", color: "var(--rel)", soft: "var(--rel-soft)" },
-    city: { label: "시내 호텔", cls: "", color: "var(--accent)", soft: "var(--accent-soft)" },
+    sofitel: { label: "소피텔 (달링하버)", cls: "", color: "var(--accent)", soft: "var(--accent-soft)" },
+    sebel: { label: "더 세벨 (더 록스)", cls: "ind", color: "var(--ind)", soft: "var(--ind-soft)" },
     home: { label: "귀국", cls: "sun", color: "var(--sun)", soft: "var(--sun-soft)" }
   };
 
@@ -310,7 +326,7 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
       dinner: [{ n: "친척과 작별 식사", d: "그동안 신세 진 친척에게 감사 식사. 인원이 있으니 예약하세요.", q: "" }],
       tip: "일기예보를 보고 바람이 센 날은 국립공원 해변이 위험합니다. 바위 위 물웅덩이(Figure Eight Pools)는 파도 사고가 잦아 가지 않는 편이 안전합니다." },
 
-    { date: "2027-01-09", ph: "city", title: "시내로 이동, 달링하버", stay: "소피텔 시드니 달링하버",
+    { date: "2027-01-09", ph: "sofitel", title: "시내로 이동, 달링하버", stay: "소피텔 시드니 달링하버",
       lead: "친척집을 떠나 시내 호텔로 옮깁니다. 체크인은 15:00. 먼저 짐을 맡기고 놉니다.",
       spots: [
         { n: "소피텔 달링하버 짐 보관", d: "일찍 도착하면 프런트에 짐을 맡기고 체크인 전에 나갑니다.", q: "Sofitel Sydney Darling Harbour" },
@@ -326,7 +342,7 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
       ],
       tip: "여름 토요일 밤에는 달링하버에서 불꽃놀이가 열립니다(보통 21:00). 날짜는 현지 공지로 확인하세요." },
 
-    { date: "2027-01-10", ph: "city", title: "피시마켓과 바랑가루", stay: "소피텔 시드니 달링하버",
+    { date: "2027-01-10", ph: "sofitel", title: "피시마켓과 바랑가루", stay: "소피텔 시드니 달링하버",
       lead: "해산물 점심을 먹고 항구 서쪽 지구를 걷습니다.",
       spots: [
         { n: "Sydney Fish Market (Pyrmont)", d: "굴, 새우, 랍스터를 사서 바로 먹는 시장. 신축 이전 여부와 영업시간을 확인하세요.", q: "Sydney Fish Market Pyrmont" },
@@ -342,7 +358,7 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
       ],
       tip: "일요일은 시내 가게가 일찍 닫습니다. 쇼핑은 오늘 오전에." },
 
-    { date: "2027-01-11", ph: "city", title: "오페라하우스와 보태닉 가든", stay: "소피텔 시드니 달링하버",
+    { date: "2027-01-11", ph: "sofitel", title: "오페라하우스와 보태닉 가든", stay: "소피텔 시드니 달링하버",
       lead: "시드니를 대표하는 풍경을 하루에 몰아서 봅니다.",
       spots: [
         { n: "Royal Botanic Garden Sydney", d: "하버 옆 큰 정원. 박쥐 군락과 잔디밭이 있습니다. 시원한 오전에.", q: "Royal Botanic Garden Sydney" },
@@ -357,7 +373,7 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
       ],
       tip: "내일은 호텔을 옮기는 날입니다. 오늘 밤에 짐을 대충 정리해 두세요." },
 
-    { date: "2027-01-12", ph: "city", title: "더 록스로 이동", stay: "더 세벨 키웨스트 스위트 (The Rocks)",
+    { date: "2027-01-12", ph: "sebel", title: "더 록스로 이동", stay: "더 세벨 키웨스트 스위트 (The Rocks)",
       lead: "소피텔 체크아웃(11:00) 후 세벨 체크인(14:00). 짐부터 맡기고 동네를 걷습니다.",
       spots: [
         { n: "더 세벨 키웨스트 스위트", d: "일찍 도착하면 짐을 맡기고 나갑니다. 방은 하버브리지와 오페라하우스 전망입니다.", q: "The Sebel Quay West Suites Sydney" },
@@ -372,7 +388,7 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
       ],
       tip: "이동일은 무리하지 말고 오후에 호텔 근처만 걷습니다. 윤이 컨디션을 우선하세요." },
 
-    { date: "2027-01-13", ph: "city", title: "왓슨스 베이", stay: "더 세벨 키웨스트 스위트",
+    { date: "2027-01-13", ph: "sebel", title: "왓슨스 베이", stay: "더 세벨 키웨스트 스위트",
       lead: "서큘러 키에서 페리로 약 25분. 절벽과 해변, 바닷가 해산물을 즐기는 하루입니다.",
       spots: [
         { n: "Watsons Bay 페리", d: "도심에서 페리로 이동하면 하버 풍경이 그대로 관광입니다.", q: "Watsons Bay Wharf" },
@@ -388,7 +404,7 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
       ],
       tip: "돌아오는 페리 시간표를 미리 저장하세요. 일몰까지 있다가 돌아오면 야경이 예쁩니다." },
 
-    { date: "2027-01-14", ph: "city", title: "하버브리지와 루나파크", stay: "더 세벨 키웨스트 스위트",
+    { date: "2027-01-14", ph: "sebel", title: "하버브리지와 루나파크", stay: "더 세벨 키웨스트 스위트",
       lead: "마지막 관광일. 다리를 걸어 건너 반대편 놀이공원으로 갑니다.",
       spots: [
         { n: "Sydney Harbour Bridge Pylon Lookout", d: "다리 기둥 꼭대기 전망대. 브리지 클라임보다 쉽고 아이와 갈 만합니다.", q: "Pylon Lookout Sydney Harbour Bridge" },
@@ -432,8 +448,8 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
   var STAYS = [
     { name: "노보텔 시드니 인터내셔널 에어포트", dates: "12/29 – 12/30 (1박)", addr: "22 Levey St, Wolli Creek NSW 2205", cin: "14:00", cout: "11:00", ph: "+61 2 9518 2000", note: "현장 잔금 34.25 AUD", q: "Novotel Sydney International Airport", c: "air" },
     { name: "친척집", dates: "12/30 – 1/9 (10박)", addr: "10 Furber Rd, Centennial Park NSW 2021", cin: "", cout: "", ph: "", note: "", q: "10 Furber Rd, Centennial Park NSW 2021", c: "rel" },
-    { name: "소피텔 시드니 달링하버", dates: "1/9 – 1/12 (3박)", addr: "12 Darling Dr, Sydney NSW 2000", cin: "15:00", cout: "11:00", ph: "+61 2 8388 8888", note: "현장 결제 720.80 AUD · 도착 전날 18:00까지 무료 취소", q: "Sofitel Sydney Darling Harbour", c: "city" },
-    { name: "더 세벨 키웨스트 스위트 시드니", dates: "1/12 – 1/15 (3박)", addr: "98 Gloucester St, The Rocks NSW 2000", cin: "14:00", cout: "10:00", ph: "+61 2 9240 6000", note: "현장 결제 1,424 AUD · 도착 전날 18:00까지 무료 취소 · 하버 전망 객실", q: "The Sebel Quay West Suites Sydney", c: "city" }
+    { name: "소피텔 시드니 달링하버", dates: "1/9 – 1/12 (3박)", addr: "12 Darling Dr, Sydney NSW 2000", cin: "15:00", cout: "11:00", ph: "+61 2 8388 8888", note: "현장 결제 720.80 AUD · 도착 전날 18:00까지 무료 취소", q: "Sofitel Sydney Darling Harbour", c: "sofitel" },
+    { name: "더 세벨 키웨스트 스위트 시드니", dates: "1/12 – 1/15 (3박)", addr: "98 Gloucester St, The Rocks NSW 2000", cin: "14:00", cout: "10:00", ph: "+61 2 9240 6000", note: "현장 결제 1,424 AUD · 도착 전날 18:00까지 무료 취소 · 하버 전망 객실", q: "The Sebel Quay West Suites Sydney", c: "sebel" }
   ];
 
   var FLIGHTS = [
@@ -447,7 +463,7 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
     { h: "교통", p: ["어른은 신용카드나 휴대폰 결제를 단말기에 대면 기차·버스·페리를 탈 수 있습니다(Opal 카드 대신). 같은 카드나 기기로 찍어야 일일 상한이 합산되고, 일요일은 하루 요금 상한이 더 낮습니다.", "윤이는 만 4~15세라 어린이(반값) 요금 대상입니다. 카드 탭은 성인 요금으로 계산되니, 어린이 요금을 받으려면 어린이 Opal 카드나 Opal 싱글 트립 티켓을 써야 합니다. 구입처는 역 창구에서 확인하세요(만 3세 이하는 무료).", "Uber 등 차량 호출을 쓸 때도 카시트 규정은 같습니다. 앱에 어린이 카시트 옵션이 있는지 확인하고 없으면 부스터를 지참하세요.", "공휴일(1/1)은 일요일 시간표로 운행합니다."] },
     { h: "해변 안전", p: ["반드시 빨간색·노란색 깃발 사이에서만 수영하세요. 깃발이 없는 곳은 들어가지 않습니다.", "이안류(바다로 끌려가는 물살)를 만나면 해변과 나란한 방향으로 헤엄쳐 빠져나옵니다.", "바위 위나 절벽 끝에서 사진을 찍지 마세요. 사고가 잦습니다."] },
     { h: "돈과 결제", p: ["통화는 호주 달러(AUD). 대부분 카드나 휴대폰 결제가 가능하고 현금은 거의 필요 없습니다.", "팁 문화가 없습니다. 식당 서비스에 만족하면 10% 정도 자유롭게 주면 됩니다.", "일부 가게는 공휴일에 10~15%의 할증(Surcharge)을 붙입니다."] },
-    { h: "준비물과 규정", p: ["전압 230V, 콘센트는 Type I(비스듬한 날 3개). 한국용 멀티어댑터를 챙기세요.", "한국 여권은 전자여행허가(ETA)가 필요합니다. 앱으로 미리 신청되어 있는지 확인하세요.", "음식물, 과일, 씨앗류, 나무 제품은 입국 시 신고 대상입니다. 걸리면 벌금이 큽니다.", "여행자보험과 해외 데이터 로밍 또는 eSIM을 미리 준비하세요."] },
+    { h: "준비물과 규정", p: ["전압 230V, 콘센트는 Type I(비스듬한 날 3개). 한국용 멀티어댑터를 챙기세요.", "입국 서류(ETA)는 '준비물' 탭에 정리했습니다.", "음식물, 과일, 씨앗류, 나무 제품은 입국 시 신고 대상입니다. 걸리면 벌금이 큽니다.", "여행자보험과 해외 데이터 로밍 또는 eSIM을 미리 준비하세요."] },
     { h: "비상 연락", p: ["긴급 상황(경찰·소방·구급): 000", "주시드니 대한민국 총영사관 영사콜센터(24시간): +82-2-3210-0404", "병원은 Medicare가 적용되지 않습니다. 보험 영수증을 꼭 받아 두세요."] }
   ];
 
@@ -590,7 +606,7 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
     var shown = 0;
     DAYS.forEach(function (day, i) {
       if (f === "rel" && day.ph !== "rel") return;
-      if (f === "city" && day.ph !== "city" && day.ph !== "home" && day.ph !== "air") return;
+      if (f === "city" && day.ph !== "sofitel" && day.ph !== "sebel" && day.ph !== "home" && day.ph !== "air") return;
       var all = day.lunch.map(function (m) { return { m: m, t: "점심" }; }).concat(day.dinner.map(function (m) { return { m: m, t: "저녁" }; }))
         .filter(function (x) { return x.m.q && (!state.priceFilter || (BUD[x.m.n] && tier(BUD[x.m.n]) === state.priceFilter)); });
       if (!all.length) return;
@@ -606,6 +622,84 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
     view.querySelectorAll("[data-day]").forEach(function (b) { b.addEventListener("click", function () { state.day = +b.dataset.day; save("sydney.day", String(state.day)); setTab("plan"); window.scrollTo(0, 0); }); });
   }
 
+
+  var PREP = [
+    { h: "서류", items: [
+      ["여권 (3명 모두)", "유효기간 6개월 이상 남았는지 확인. 윤이 여권도 확인."],
+      ["호주 ETA (3명 모두)", "위 안내 참고. 승인 메일을 캡처해 두세요."],
+      ["항공 e-티켓과 호텔 예약 확인서", "스크린샷 저장. 호주 입국 때 숙소 주소를 묻기도 합니다."],
+      ["여행자보험 가입", "의료비 보장 중심으로. 영수증과 진단서 보관 방법도 확인."],
+      ["윤이 영문 가족관계 서류 (선택)", "한쪽 부모만 동행할 일이 생길 때를 대비한 안전장치."]
+    ] },
+    { h: "결제·통신", items: [
+      ["해외 결제 되는 신용·체크카드 2장", "Visa·Master. 한 장은 비상용으로 따로 보관."],
+      ["현금 약 A$100~200", "대부분 카드·휴대폰 결제로 충분합니다."],
+      ["eSIM 또는 로밍", "도착 후 바로 쓸 수 있게 출발 전에 설치."],
+      ["보조배터리 (기내 반입)", "수하물로 부치면 안 됩니다. 용량 규정은 항공사 공지 확인."],
+      ["Type I 멀티어댑터와 충전기", "호주는 230V, 비스듬한 날 3개."]
+    ] },
+    { h: "윤이", items: [
+      ["휴대용 부스터 시트 (또는 친척에게 부탁)", "차를 탈 때마다 필요. 만 7세 미만 의무."],
+      ["물놀이 용품", "래시가드, 수영복, 튜브 대신 구명조끼, 모래놀이 장난감."],
+      ["상비약과 평소 먹는 약", "해열제, 밴드, 벌레 물린 데 연고."],
+      ["기내에서 놀 거리", "스티커북, 태블릿, 이어폰. 비행 약 10시간."],
+      ["간식 (육류·과일·씨앗 제외)", "과자류는 대체로 괜찮지만 입국 때 신고하세요."]
+    ] },
+    { h: "옷과 햇빛", items: [
+      ["여름옷과 수영복", "낮 25~30도. 해변과 물놀이를 자주 합니다."],
+      ["얇은 겉옷", "블루마운틴과 페리 위, 저녁 바람 대비."],
+      ["SPF50+ 선크림, 모자, 선글라스", "호주 자외선은 매우 강합니다. 현지에서 사도 됩니다."],
+      ["편한 운동화와 샌들", "해안 산책과 동물원에서 많이 걷습니다."],
+      ["물병, 작은 우비", "소나기 대비."]
+    ] },
+    { h: "입국 전 정리", items: [
+      ["입국 신고서와 검역 신고", "과일, 육류, 유제품, 씨앗, 나무 제품을 갖고 있으면 반드시 신고합니다."],
+      ["대한항공 온라인 체크인", "출발 24시간 전부터. 좌석을 가족 붙여서 확인."],
+      ["집 정리와 공항 이동 계획", "12/29 08:00 출발이므로 공항 도착은 05:00 전후."]
+    ] },
+    { h: "미리 예약하면 좋은 것", items: [
+      ["타롱가 동물원 · 페더데일 · SEA LIFE 입장권", "온라인 예매와 가족 패키지가 더 쌉니다."],
+      ["Scenic World (블루마운틴)", "날짜 지정 예약."],
+      ["오페라하우스 투어", "인기 시간대는 마감됩니다."],
+      ["Doyles, Cafe Sydney, Mr Wong, Quay", "저녁 예약 필수에 가깝습니다."],
+      ["새해 전야 불꽃놀이 관람 장소", "친척과 상의해 유료 지정석 여부를 정합니다."]
+    ] }
+  ];
+
+  function loadChecks() { try { return JSON.parse(load("sydney.checks") || "{}"); } catch (e) { return {}; } }
+
+  function renderPrep() {
+    var left = Math.ceil((parse("2026-12-29") - parse(ymd(new Date()))) / 86400000);
+    var cd = left > 0 ? "<b>D-" + left + "</b><span class='sub'>출발 12/29까지</span>" : "<b>여행 중</b><span class='sub'>즐거운 시간 보내세요</span>";
+    var ck = loadChecks(), total = 0, done = 0;
+    var groups = PREP.map(function (g, gi) {
+      var rows = g.items.map(function (it, ii) {
+        var id = gi + "-" + ii; total++; if (ck[id]) done++;
+        return '<label for="c' + id + '"><input type="checkbox" id="c' + id + '" data-k="' + id + '"' + (ck[id] ? " checked" : "") + '><span>' + esc(it[0]) + '<small>' + esc(it[1]) + '</small></span></label>';
+      }).join("");
+      return '<div class="card"><h3>' + g.h + '</h3><div class="checks">' + rows + '</div></div>';
+    }).join("");
+
+    var eta = '<div class="card eta"><h3>호주 ETA (전자여행허가)</h3>' +
+      '<p style="margin:0">한국 여권으로 호주에 관광 입국하려면 ETA(서브클래스 601)가 필요합니다. 3명 모두 각자 신청해야 하고, 윤이 것은 부모가 대신 신청할 수 있습니다.</p>' +
+      '<ol><li>스마트폰에 공식 앱 <b>Australian ETA</b>를 설치합니다(앱스토어·구글 플레이).</li>' +
+      '<li>여권의 전자칩을 스캔하고 얼굴 사진을 찍은 뒤 정보를 입력하고 결제합니다. 서비스 요금은 1인 약 A$20(변동 가능).</li>' +
+      '<li>보통 몇 분에서 며칠 안에 승인 메일이 옵니다. 출발 최소 3일 전, 여유 있게는 지금 바로 신청하세요.</li>' +
+      '<li>승인은 여권번호에 연결됩니다. 여권을 새로 만들면 다시 신청해야 합니다.</li></ol>' +
+      '<div class="warn">앱 외의 대행 사이트는 수수료가 몇 배입니다. 공식 안내는 <a href="https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/electronic-travel-authority-601" target="_blank" rel="noopener">호주 내무부 ETA 페이지</a>에서 확인하세요.</div></div>';
+
+    view.innerHTML = '<div class="stack"><div class="card"><div class="cd">' + cd + '</div><div class="prog" id="prog">체크리스트 ' + done + '/' + total + '</div></div>' + eta + groups +
+      '<p class="fine" style="margin-top:0">체크 표시는 이 기기에만 저장됩니다.</p></div>';
+
+    view.querySelectorAll(".checks input").forEach(function (cb) {
+      cb.addEventListener("change", function () {
+        var c = loadChecks(); if (cb.checked) c[cb.dataset.k] = 1; else delete c[cb.dataset.k];
+        save("sydney.checks", JSON.stringify(c));
+        document.getElementById("prog").textContent = "체크리스트 " + Object.keys(c).length + "/" + total;
+      });
+    });
+  }
+
   function renderInfo() {
     var h = '<div class="stack">' + INFO.map(function (s) {
       return '<div class="card"><h3>' + esc(s.h) + '</h3>' + s.p.map(function (p) { return '<p style="margin:4px 0">' + esc(p) + '</p>'; }).join("") + '</div>';
@@ -616,7 +710,7 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
   function setTab(t) {
     state.tab = t; save("sydney.tab", t);
     document.querySelectorAll("#tabs button").forEach(function (b) { b.setAttribute("aria-selected", String(b.dataset.tab === t)); });
-    if (t === "plan") renderPlan(); else if (t === "stay") renderStay(); else if (t === "food") renderFood(); else renderInfo();
+    if (t === "plan") renderPlan(); else if (t === "stay") renderStay(); else if (t === "food") renderFood(); else if (t === "prep") renderPrep(); else renderInfo();
   }
 
   document.querySelectorAll("#tabs button").forEach(function (b) { b.addEventListener("click", function () { setTab(b.dataset.tab); window.scrollTo(0, 0); }); });
@@ -627,7 +721,7 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
   if (idx < 0) { var s = parseInt(load("sydney.day"), 10); idx = (s >= 0 && s < DAYS.length) ? s : 0; }
   state.day = idx;
   var t0 = load("sydney.tab");
-  setTab(["plan", "stay", "food", "info"].indexOf(t0) >= 0 ? t0 : "plan");
+  setTab(["plan", "stay", "food", "prep", "info"].indexOf(t0) >= 0 ? t0 : "plan");
 })();
 </script>
 </body>
