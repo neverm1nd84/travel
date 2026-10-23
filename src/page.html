@@ -87,6 +87,7 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
 .item { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; }
 .item > div { min-width: 0; }
 .item b { display: block; font-weight: 700; }
+.item.tour { border-left: 4px solid var(--ind); }
 .item span.desc { color: var(--muted); font-size: 14px; display: block; }
 .map { flex: 0 0 auto; font-size: 12px; font-weight: 700; text-decoration: none; border: 1px solid var(--accent); border-radius: 99px; padding: 3px 11px; color: var(--accent); white-space: nowrap; }
 .meal { border-left: 4px solid var(--sun); }
@@ -234,6 +235,12 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
       tip: "마켓은 14시 이후에 파장 분위기입니다. 오전 일찍 가세요." },
 
     { date: "2027-01-03", ph: "rel", title: "블루마운틴 당일치기", stay: "친척집",
+      tours: [
+        { n: "놀러와 시드니 · 블루마운틴 + 페더데일 오픈런 + 시닉월드", d: "후기 5,000여 개. 극성수기(12/20~1/4) 07:10 Rydges World Square(389 Pitt St) 집합, 시내 복귀 약 17:30. 페더데일·국립공원 입장료 포함, 시닉월드는 옵션. 최소 4명 출발, 3일 전까지 무료 취소.", p: "3인 가족(성인2+아동1) 시닉월드 포함 371,401원 / 불포함 221,538원", u: "https://experiences.myrealtrip.com/products/3441574" },
+        { n: "대한관광여행사 · 페더데일 + 블루마운틴", d: "후기 3,500여 개. 07:20 달링하버 SEA LIFE 옆(1-5 Wheat Rd) 집합, Rydges(389 Pitt St) 하차. 캥거루·쿼카 먹이 포함, 시닉월드 옵션. 카시트 없음. 4일 전까지 무료 취소.", p: "성인 67,020원~", u: "https://experiences.myrealtrip.com/products/3149962" },
+        { n: "고호주 · 동물원 없는 블루마운틴 + 웬트워스 폭포 산책", d: "페더데일을 1/4에 따로 갈 때 맞는 코스. 07:50 Hyatt Regency(161 Sussex St) 집합. 왕복 30분 숲길 산책, 만 5세도 무리 없었다는 안내. 최소 6명 출발, 카시트 별도.", p: "성인 75,165원~ (시닉월드 옵션)", u: "https://experiences.myrealtrip.com/products/3860527" },
+        { n: "마이시드니 · 가족 단독투어 (페더데일 + 시닉월드)", d: "우리 가족만 타는 프라이빗 투어. 숙소 픽업·드롭, 8세 미만 카시트 무료. 입장료는 현장 별도(시닉월드 성인 A$65·아동 A$45 피크시즌, 페더데일 성인 A$25·아동 A$22).", p: "605,040원~ (차량·가이드)", u: "https://experiences.myrealtrip.com/products/3886115" }
+      ],
       lead: "시드니 서쪽 산악 국립공원. 차로 편도 약 1시간 30분입니다.",
       withRel: true,
       spots: [
@@ -249,6 +256,10 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
       tip: "시드니보다 5~8도 낮고 날씨가 변합니다. 얇은 겉옷을 챙기세요. 친척 차량 이동이 가장 편합니다." },
 
     { date: "2027-01-04", ph: "rel", title: "페더데일 야생동물공원", stay: "친척집",
+      tours: [
+        { n: "PJ 페더데일 오픈런 셔틀 + 입장권", d: "투어가 아닌 정시 셔틀. 07:10 55 Market St 출발 → 07:50 페더데일 도착 → 10:00 출발 → 10:45 시내 도착. 화·목·일 정기 운행, 월요일(1/4)은 4인 이상 모객 시 출발하거나 추가 요금. 3~7세 차일드 시트는 예약 시 생년월일 기재 필요.", p: "1인 30,717원~", u: "https://experiences.myrealtrip.com/products/4567958" },
+        { n: "블루마운틴 결합 투어 (1/3 참고 상품)", d: "1/3 투어 대부분이 페더데일을 아침에 먼저 들르는 구성입니다. 1/3에 결합 투어를 하면 이날은 비워 둘 수 있습니다.", p: "", u: "" }
+      ],
       lead: "코알라와 캥거루를 가까이서 보는 날입니다. 윤이에게 가장 기억에 남을 하루가 될 수 있습니다.",
       withRel: true,
       spots: [
@@ -512,6 +523,12 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
     }).join("") + '</ul>';
   }
 
+  function tourItems(list) {
+    return '<ul class="list">' + list.map(function (t) {
+      return '<li class="item tour"><div><b>' + esc(t.n) + '</b><span class="desc">' + esc(t.d) + '</span>' + (t.p ? '<span class="price">' + esc(t.p) + '</span>' : "") + '</div>' + (t.u ? '<a class="map" href="' + t.u + '" target="_blank" rel="noopener">상품 보기</a>' : "") + '</li>';
+    }).join("") + '</ul>';
+  }
+
   function dayLabel(i) {
     var d = parse(DAYS[i].date);
     return (d.getMonth() + 1) + "월 " + d.getDate() + "일 (" + WD[d.getDay()] + ")";
@@ -539,6 +556,7 @@ section.block { display: flex; flex-direction: column; gap: 8px; }
       '<section class="block"><h3 class="label">가볼 곳</h3>' + items(day.spots) + '</section>';
     if (day.lunch.length) html += '<section class="block"><h3 class="label">점심</h3>' + items(day.lunch, "meal") + '</section>';
     if (day.dinner.length) html += '<section class="block"><h3 class="label">저녁</h3>' + items(day.dinner, "meal") + '</section>';
+    if (day.tours && day.tours.length) html += '<section class="block"><h3 class="label">참고: 투어 상품 (친척 차량이 어려울 때)</h3>' + tourItems(day.tours) + '<p class="fine">마이리얼트립 기준 가격(2026-10-23 확인, 쿠폰 적용 전). 예약 전 날짜·인원 다시 확인.</p></section>';
     if (day.tip) html += '<div class="tipbox"><b>알아둘 것</b><br>' + esc(day.tip) + '</div>';
     html += '<div class="pager"><button id="prev"' + (state.day === 0 ? " disabled" : "") + '>← 전날</button><button id="next"' + (state.day === DAYS.length - 1 ? " disabled" : "") + '>다음날 →</button></div></article>' +
       '<p class="fine">영업시간·휴무·예약 여부는 방문 전에 구글맵에서 한 번 더 확인하세요.</p>';
